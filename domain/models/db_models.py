@@ -2,8 +2,11 @@ from __future__ import annotations
 
 from sqlmodel import Field, Relationship, SQLModel
 
+class Base(SQLModel):
+    ...
 
-class User(SQLModel, table=True):
+
+class User(Base, table=True):
     id: int | None = Field(default=None, primary_key=True)
     login: str
 

@@ -1,0 +1,13 @@
+# Alembic Dockerfile
+FROM python:3.13-slim
+
+WORKDIR /app
+
+COPY ./alembic.ini ./alembic/
+COPY ./migrations ./migrations/
+COPY ./env.py ./alembic/
+COPY ./requirements.txt ./
+
+RUN pip install --no-cache-dir -r requirements.txt
+
+CMD ["alembic", "upgrade", "heads"]
