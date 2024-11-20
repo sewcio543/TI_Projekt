@@ -6,6 +6,6 @@ from infrastructure.repositories.repository import Repository
 class UserRepository(Repository[User], IUserRepository):
     model = User
 
-    def exists(self, id: int) -> bool:
-        entity = self.session.get(self.model, id)
+    async def exists(self, id: int) -> bool:
+        entity = await self.session.get(self.model, id)
         return entity is not None

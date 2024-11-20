@@ -5,11 +5,11 @@ from domain.models.db_models import User
 
 
 class IUserRepository(IRepository[User]):
-    def get(self, id: int) -> User:
+    async def get(self, id: int) -> User:
         raise NotImplementedError
 
-    def get_all(self) -> Iterable[User]:
+    async def get_all(self) -> Iterable[User]:
         raise NotImplementedError
 
-    def exists(self, id: int) -> bool:
+    async def exists(self, id: int) -> bool:
         raise NotImplementedError

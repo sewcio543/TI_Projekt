@@ -13,59 +13,62 @@ class UserService(IUserService):
         self.session = session
         self.repository = repository
 
-    def get_by_id(self, id: int) -> UserDto:
+    async def get_by_id(self, id: int) -> UserDto:
         if id < 0:
             raise ValueError("Invalid id")
 
-        entity = self.repository.get(id)
+        entity = await self.repository.get(id)
 
         if entity is None:
             raise ValueError("Entity not found")
 
         return user_to_dto(entity)
 
-    def get_all(self) -> Iterable[UserDto]:
-        return map(user_to_dto, self.repository.get_all())
+    async def get_all(self) -> Iterable[UserDto]:
+        users = await self.repository.get_all()
+        return map(user_to_dto, users)
 
-    def create(self, dto: CreateUserDto) -> int:
+    async def create(self, dto: CreateUserDto) -> int:
         if dto is None:
             raise ValueError("Invalid entity")
 
         user = dto_to_user(dto)
 
-        self.repository.insert(user)
-        self.session.commit()
+        print(user)
+        await self.repository.insert(user)
+        await self.session.commit()
 
         if user.id is None:
             raise ValueError("Entity not created")
 
         return user.id
 
-    def update(self, dto: UpdateUserDto) -> None:
+    async def update(self, dto: UpdateUserDto) -> None:
         if dto is None:
             raise ValueError("Invalid entity")
 
         if dto.id is None or dto.id < 0:
             raise ValueError("Invalid id")
 
-        entity_ = self.repository.get(dto.id)
+        entity_ = await self.repository.get(dto.id)
 
         if entity_ is None:
             raise ValueError("Entity not found")
 
         # ! TODO: smart way to update entity
         entity_.login = dto.login
+        await self.session.commit()
+        
+        return user_to_dto(entity_)
 
-        self.session.commit()
-
-    def delete(self, id: int) -> None:
+    async def delete(self, id: int) -> None:
         if id < 0:
             raise ValueError("Invalid id")
 
-        entity = self.repository.get(id)
+        entity = await self.repository.get(id)
 
         if entity is None:
             raise ValueError("Entity not found")
 
-        self.repository.delete(entity)
-        self.session.commit()
+        await self.repository.delete(entity)
+        await self.session.commit()
