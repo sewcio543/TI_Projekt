@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import create_async_engine
 
 from alembic import context
 
-from domain.models.db_models import User
+from domain.models.db_models import User, Post
 from api.helpers import get_db_url_from_env, obfuscate_password
 from api.log import log
 
@@ -40,7 +40,11 @@ def run_migrations_offline():
     script output.
 
     """    
-    url = get_db_url_from_env()
+    # ! IMPORTANT
+    # Assuming migrataions are run localy (not inside running container)
+    # than we HAVE to use host=localhost and port=5454
+    # which points to DB running inside container (docker-compose)
+    url = get_db_url_from_env(host='localhost', port=5454) 
     log.info(f"Using url: {obfuscate_password(url)}")
     context.configure(
         url=url,
@@ -67,8 +71,12 @@ async def run_migrations_online():
     and associate a connection with the context.
 
     """
-    url = get_db_url_from_env()
     
+    # ! IMPORTANT
+    # Assuming migrataions are run localy (not inside running container)
+    # than we HAVE to use host=localhost and port=5454
+    # which points to DB running inside container (docker-compose)
+    url = get_db_url_from_env(host='localhost', port=5454) 
     log.info(f"Using url: {obfuscate_password(url)}")
     connectable = create_async_engine(url, future=True)
 
