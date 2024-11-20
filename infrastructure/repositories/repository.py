@@ -22,8 +22,6 @@ class Repository[T](IRepository[T]):
 
     async def insert(self, entity: T) -> None:
         self.session.add(entity)
-        # await self.session.commit()
 
     async def delete(self, entity: T) -> None:
-        self.session.delete(entity)
-        await self.session.commit()
+        await self.session.delete(entity)

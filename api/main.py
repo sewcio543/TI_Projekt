@@ -58,4 +58,9 @@ async def update_user(user_id: int, user: UpdateUserDto):
 async def create_user(user: CreateUserDto):
     user_id = await service.create(user)
     return {"id": user_id}
+
+@app.delete("/user/{user_id}", status_code=status.HTTP_200_OK)
+async def delete_user(user_id: int):
+    await service.delete(user_id)
+    return {"msg": f"deleted user {user_id}"}
     
