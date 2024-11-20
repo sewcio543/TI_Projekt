@@ -1,0 +1,38 @@
+# Alembic Dockerfile
+FROM python:3.13-slim
+
+ENV PYTHONFAULTHANDLER=1 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONHASHSEED=random \
+    PIP_NO_CACHE_DIR=off \
+    PIP_DISABLE_PIP_VERSION_CHECK=on \
+    PIP_DEFAULT_TIMEOUT=100 \
+    PATH="$PATH:/install/bin" \
+    PYTHONPATH="$PYTHONPATH:/install/lib/python3.11/site-packages"
+
+ARG PG_DSN
+ARG PG_USER
+ARG PG_PASSWORD
+ARG PG_HOST
+ARG PG_PORT
+ARG PG_DB
+ENV PG_USER=${PG_USER}
+ENV PG_PASSWORD=${PG_PASSWORD}
+ENV PG_HOST=${PG_HOST}
+ENV PG_PORT=${PG_PORT}
+ENV PG_DB=${PG_DB}
+ENV PG_DSN=${PG_DSN}
+
+WORKDIR /app
+
+COPY api /app/api
+COPY domain /app/domain
+COPY migrations  /app/migrations
+COPY ./alembic.ini  /app/
+COPY ./requirements.txt /app/
+
+RUN pip install -r requirements.txt
+
+
+
+CMD ["alembic", "upgrade", "heads"]
