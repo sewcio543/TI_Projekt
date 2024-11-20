@@ -1,5 +1,9 @@
 import re
 from environs import Env
+from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
+import logging
+
+log = logging.getLogger()
 
 def get_db_url_from_env(user=None, password=None, host=None, port=None, database=None):
 
@@ -27,6 +31,36 @@ def get_db_url_from_env(user=None, password=None, host=None, port=None, database
         pg_database = database
 
     return f"postgresql+asyncpg://{pg_user}:{pg_password}@{pg_host}:{pg_port}/{pg_database}"
+
+
+def init_postgres_ctx(dsn='dsn', pool_max=5, pool_overflow=10, ):
+    """Async initialization function for postgres connection
+
+    :param app: aiohttp app.
+    :param name:
+    :param dsn_key:
+    :param session_key:
+    :return: engine
+    """
+
+    dsn_log = obfuscate_password(dsn)
+    engine = create_async_engine(
+        dsn,
+        pool_pre_ping=True,
+        pool_timeout=2 * 60,
+        pool_size=pool_max,
+        max_overflow=pool_overflow,
+        # json_serializer=dumps,
+        # json_deserializer=loads
+    )
+    async_session = async_sessionmaker(engine, expire_on_commit=False)
+
+
+    log.info(
+        f'Created postgres pool (max: {pool_max}/overflow: {pool_overflow}) and connected to {dsn_log}. '
+    )
+
+    return async_session
 
 
 
