@@ -1,3 +1,5 @@
+import os
+
 from fastapi import FastAPI, status
 from sqlmodel import Session, SQLModel, create_engine
 
@@ -7,10 +9,12 @@ from shared.dto.user_dto import CreateUserDto, UpdateUserDto, UserDto
 
 app = FastAPI()
 
-sqlite_file_name = "databases.db"
-sqlite_url = f"sqlite:///{sqlite_file_name}"
+sqlite_file_name = "database.db"
+connection_string = f"sqlite:///{sqlite_file_name}"
 
-engine = create_engine(sqlite_url)
+connection_string = os.environ.get("DATABASE_URL", connection_string)
+
+engine = create_engine(connection_string)
 SQLModel.metadata.create_all(engine)
 session = Session(engine)
 
@@ -19,18 +23,18 @@ repository = UserRepository(session=session)
 service = UserService(session=session, repository=repository)
 
 
-@app.get("/user/{id}")
+@app.get("/user/{user_id}", response_model=UserDto)
 def get_user(user_id: int) -> UserDto:
     entity = service.get_by_id(user_id)
     return entity
 
 
-@app.get("/users/")
+@app.get("/user/")
 def get_all_users() -> list[UserDto]:
     return list(service.get_all())
 
 
-@app.put("/user/{id}")
+@app.put("/user/{user_id}")
 def update_user(user_id: int, user: UpdateUserDto):
     if user_id != user.id:
         # ! TODO: maybe some kind of error and middleware
