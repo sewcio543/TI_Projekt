@@ -1,21 +1,26 @@
-from __future__ import annotations
+# from __future__ import annotations
 
-from typing import List
 from sqlmodel import Field, Relationship, SQLModel
 
 class Base(SQLModel):
     ...
 
 
+from typing import Optional, List
+from sqlalchemy.orm import Mapped, relationship, mapped_column
+from sqlalchemy import ForeignKey
+
+
+
 class User(Base, table=True):
     id: int | None = Field(default=None, primary_key=True)
     login: str
 
-    posts: List[Post] = Relationship(back_populates="user")
+    posts: list["Post"] = Relationship(back_populates="user")
 #     comments: list[Comment] = Relationship(back_populates="user")
 
 
-class Post(SQLModel, table=True):
+class Post(Base, table=True):
     id: int | None = Field(default=None, primary_key=True)
     content: str
 
@@ -34,3 +39,5 @@ class Post(SQLModel, table=True):
 
 #     user_id: int | None = Field(default=None, foreign_key="user.id")
 #     user: User | None = Relationship(back_populates="comments")
+
+

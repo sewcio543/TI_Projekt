@@ -2,18 +2,18 @@ from typing import Iterable
 
 from sqlmodel import Session
 
-from application.mapping.mapping import dto_to_user, user_to_dto
-from application.services.interfaces.iuser_service import IUserService
-from domain.contracts.iuser_repository import IUserRepository
-from shared.dto.user_dto import CreateUserDto, UpdateUserDto, UserDto
+from application.mapping.mapping import post_to_dto, dto_to_post
+from application.services.interfaces.ipost_service import IPostService
+from domain.contracts.ipost_repository import IPostRepository
+from shared.dto.post_dto import CreatePostDto, UpdatePostDto, PostDto
 
 
-class UserService(IUserService):
-    def __init__(self, session: Session, repository: IUserRepository) -> None:
+class PostService(IPostService):
+    def __init__(self, session: Session, repository: IPostRepository) -> None:
         self.session = session
         self.repository = repository
 
-    async def get_by_id(self, id: int) -> UserDto:
+    async def get_by_id(self, id: int) -> PostDto:
         if id < 0:
             raise ValueError("Invalid id")
 
@@ -22,27 +22,27 @@ class UserService(IUserService):
         if entity is None:
             raise ValueError("Entity not found")
 
-        return user_to_dto(entity)
+        return post_to_dto(entity)
 
-    async def get_all(self) -> Iterable[UserDto]:
-        users = await self.repository.get_all()
-        return map(user_to_dto, users)
+    async def get_all(self) -> Iterable[PostDto]:
+        posts = await self.repository.get_all()
+        return map(post_to_dto, posts)
 
-    async def create(self, dto: CreateUserDto) -> int:
+    async def create(self, dto: CreatePostDto) -> int:
         if dto is None:
             raise ValueError("Invalid entity")
 
-        user = dto_to_user(dto)
+        post = dto_to_post(dto)
 
-        await self.repository.insert(user)
+        await self.repository.insert(post)
         await self.session.commit()
 
-        if user.id is None:
+        if post.id is None:
             raise ValueError("Entity not created")
 
-        return user.id
+        return post.id
 
-    async def update(self, dto: UpdateUserDto) -> None:
+    async def update(self, dto: UpdatePostDto) -> None:
         if dto is None:
             raise ValueError("Invalid entity")
 
@@ -55,10 +55,10 @@ class UserService(IUserService):
             raise ValueError("Entity not found")
 
         # ! TODO: smart way to update entity
-        entity_.login = dto.login
+        entity_.content = dto.content
         await self.session.commit()
         
-        return user_to_dto(entity_)
+        return post_to_dto(entity_)
 
     async def delete(self, id: int) -> None:
         if id < 0:
