@@ -3,7 +3,7 @@ from __future__ import annotations
 import re
 from abc import ABC, abstractmethod
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession
 from typing_extensions import Self
 
 
@@ -18,6 +18,10 @@ class IDatabaseConnection(ABC):
     @classmethod
     @abstractmethod
     def from_env(cls) -> Self:
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_engine(self, **kwargs) -> AsyncEngine:
         raise NotImplementedError
 
     def _obfuscate_password(self) -> str:

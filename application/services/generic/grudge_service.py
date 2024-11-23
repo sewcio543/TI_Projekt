@@ -2,13 +2,15 @@ from typing import Iterable
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from application.mapping.mapping import dto_to_grudge, grudge_to_dto
+from application.mapping.mapping import GrudgeMapper
 from application.services.interfaces.igrudge_service import IGrudgeService
 from domain.contracts.igrudge_repository import IGrudgeRepository
 from shared.dto.grudge_dto import CreateGrudgeDto, GrudgeDto
 
 
 class GrudgeService(IGrudgeService):
+    mapper = GrudgeMapper
+
     def __init__(self, session: AsyncSession, repository: IGrudgeRepository) -> None:
         self.session = session
         self.repository = repository
@@ -22,25 +24,25 @@ class GrudgeService(IGrudgeService):
         if entity is None:
             raise ValueError("Entity not found")
 
-        return grudge_to_dto(entity)
+        return self.mapper.to_dto(entity)
 
     async def get_all(self) -> Iterable[GrudgeDto]:
         grudges = await self.repository.get_all()
-        return map(grudge_to_dto, grudges)
+        return map(self.mapper.to_dto, grudges)
 
     async def create(self, dto: CreateGrudgeDto) -> int:
         if dto is None:
             raise ValueError("Invalid entity")
 
-        grudge = dto_to_grudge(dto)
+        entity = self.mapper.to_entity(dto)
 
-        await self.repository.insert(grudge)
+        await self.repository.insert(entity)
         await self.session.commit()
 
-        if grudge.id is None:
+        if entity.id is None:
             raise ValueError("Entity not created")
 
-        return grudge.id
+        return entity.id
 
     async def delete(self, id: int) -> None:
         if id < 0:

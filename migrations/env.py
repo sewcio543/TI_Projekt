@@ -2,10 +2,10 @@ import asyncio
 
 from alembic import context
 from sqlalchemy.ext.asyncio import create_async_engine
-from sqlmodel import SQLModel
 
 from api.log import log
 from connections.setup import get_connection
+from domain.models.db_models import Base
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -16,7 +16,7 @@ config = context.config
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = SQLModel.metadata
+target_metadata = Base.metadata
 
 
 # other values from the config, defined by the needs of env.py,
@@ -75,9 +75,8 @@ async def run_migrations_online():
     # than we HAVE to use host=localhost and port=5454
     # which points to DB running inside container (docker-compose)
     connection = get_connection()
-    url = connection.url
-    log.info(f"Using url: {url}")
-    connectable = create_async_engine(url, future=True)
+    log.info(f"Using url: {connection.url}")
+    connectable = connection.get_engine()
 
     async with connectable.connect() as connection:
         await connection.run_sync(do_run_migrations)

@@ -1,7 +1,12 @@
 import logging
 
 from environs import Env
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from sqlalchemy.ext.asyncio import (
+    AsyncEngine,
+    AsyncSession,
+    async_sessionmaker,
+    create_async_engine,
+)
 from typing_extensions import Self
 
 from connections.idatabase_connection import IDatabaseConnection
@@ -11,6 +16,11 @@ log = logging.getLogger()
 
 class PostgresConnection(IDatabaseConnection):
     def connect(self, **kwargs) -> AsyncSession:
+        engine = self.get_engine(**kwargs)
+        async_session = async_sessionmaker(engine, expire_on_commit=False)
+        return async_session()
+
+    def get_engine(self, **kwargs) -> AsyncEngine:
         pool_max = kwargs.get("pool_max", 5)
         pool_overflow = kwargs.get("pool_overflow", 10)
 
@@ -20,17 +30,13 @@ class PostgresConnection(IDatabaseConnection):
             pool_timeout=2 * 60,
             pool_size=pool_max,
             max_overflow=pool_overflow,
-            # json_serializer=dumps,
-            # json_deserializer=loads
         )
-        async_session = async_sessionmaker(engine, expire_on_commit=False)
-
         dsn_log = self._obfuscate_password()
         log.info(
-            f"Created postgres pool (max: {pool_max}/overflow: {pool_overflow}) and connected to {dsn_log}. "
+            f"Created postgres engine (max: {pool_max}/overflow: {pool_overflow}) "
+            f"and connected to {dsn_log}. "
         )
-
-        return async_session()
+        return engine
 
     @classmethod
     def from_env(

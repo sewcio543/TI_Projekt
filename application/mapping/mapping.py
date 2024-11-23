@@ -1,3 +1,4 @@
+from application.mapping.imapper import DtoMapper
 from domain.models.db_models import Comment, Grudge, Post, User
 from shared.dto.comment_dto import CommentDto, CreateCommentDto, UpdateCommentDto
 from shared.dto.grudge_dto import CreateGrudgeDto, GrudgeDto
@@ -10,69 +11,116 @@ CommentDtoType = CommentDto | CreateCommentDto | UpdateCommentDto
 GrudgeDtoType = GrudgeDto | CreateGrudgeDto
 
 
-def user_to_dto(user: User) -> UserDto:
-    return UserDto(id=user.id, login=user.login)
+class UserMapper(DtoMapper[User]):
+    @classmethod
+    def to_dto(cls, entity: User) -> UserDto:
+        return UserDto(id=entity.id, login=entity.login)
+
+    @classmethod
+    def to_entity(cls, dto: UserDtoType) -> User:
+        user = User(login=dto.login)
+
+        if isinstance(dto, (UserDto, UpdateUserDto)):
+            user.id = dto.id
+
+        return user
+
+    @classmethod
+    def update(cls, entity: User, dto: UpdateUserDto) -> User:
+        entity.login = dto.login
+        return entity
 
 
-def dto_to_user(dto: UserDtoType) -> User:
-    user = User(login=dto.login)
+class PostMapper(DtoMapper[Post]):
+    @classmethod
+    def to_dto(cls, entity: Post) -> PostDto:
+        user_dto = UserDto(id=entity.user_id, login=entity.user.login)
+        return PostDto(id=entity.id, content=entity.content, user=user_dto)
 
-    if isinstance(dto, (UserDto, UpdateUserDto)):
-        user.id = dto.id
+    @classmethod
+    def to_entity(cls, dto: PostDtoType) -> Post:
+        post = Post(content=dto.content)
 
-    return user
+        if isinstance(dto, CreatePostDto):
+            post.user_id = dto.user_id
 
+        if isinstance(dto, PostDto):
+            post.user_id = dto.user.id  # type: ignore
 
-def post_to_dto(post: Post) -> PostDto:
-    return PostDto(id=post.id, content=post.content, user_id=post.user_id)
+        if isinstance(dto, (PostDto, UpdatePostDto)):
+            post.id = dto.id
 
+        return post
 
-def dto_to_post(dto: PostDtoType) -> Post:
-    post = Post(content=dto.content)
-
-    if isinstance(dto, (PostDto, CreatePostDto)):
-        post.user_id = dto.user_id
-
-    if isinstance(dto, (PostDto, UpdatePostDto)):
-        post.id = dto.id
-
-    return post
-
-
-def comment_to_dto(post: Comment) -> CommentDto:
-    return CommentDto(
-        id=post.id,
-        content=post.content,
-        user_id=post.user_id,
-        post_id=post.post_id,
-    )
+    @classmethod
+    def update(cls, entity: Post, dto: UpdatePostDto) -> Post:
+        entity.content = dto.content
+        return entity
 
 
-def dto_to_comment(dto: CommentDtoType) -> Comment:
-    comment = Comment(content=dto.content)
+class CommentMapper(DtoMapper[Comment]):
+    @classmethod
+    def to_dto(cls, entity: Comment) -> CommentDto:
+        user_dto = UserDto(id=entity.user_id, login=entity.user.login)
+        post_dto = PostDto(
+            id=entity.post_id,
+            content=entity.post.content,
+            user=user_dto,
+        )
+        return CommentDto(
+            id=entity.id,
+            content=entity.content,
+            user=user_dto,
+            post=post_dto,
+        )
 
-    if isinstance(dto, (CommentDto, CreateCommentDto)):
-        comment.user_id = dto.user_id
-        comment.post_id = dto.post_id
+    @classmethod
+    def to_entity(cls, dto: CommentDtoType) -> Comment:
+        comment = Comment(content=dto.content)
 
-    if isinstance(dto, (CommentDto, UpdateCommentDto)):
-        comment.id = dto.id
+        if isinstance(dto, CreateCommentDto):
+            comment.user_id = dto.user_id
+            comment.post_id = dto.post_id
 
-    return comment
+        if isinstance(dto, CommentDto):
+            comment.user_id = dto.user.id  # type: ignore
+            comment.post_id = dto.post.id  # type: ignore
+
+        if isinstance(dto, (CommentDto, UpdateCommentDto)):
+            comment.id = dto.id
+
+        return comment
+
+    @classmethod
+    def update(cls, entity: Comment, dto: UpdateCommentDto) -> Comment:
+        entity.content = dto.content
+        return entity
 
 
-def grudge_to_dto(post: Grudge) -> GrudgeDto:
-    return GrudgeDto(
-        id=post.id,
-        user_id=post.user_id,
-        post_id=post.post_id,
-    )
+class GrudgeMapper(DtoMapper[Grudge]):
+    @classmethod
+    def to_dto(cls, entity: Grudge) -> GrudgeDto:
+        user_dto = UserDto(id=entity.user_id, login=entity.user.login)
+        post_dto = PostDto(
+            id=entity.post_id,
+            content=entity.post.content,
+            user=user_dto,
+        )
+        return GrudgeDto(id=entity.id, user=user_dto, post=post_dto)
 
+    @classmethod
+    def to_entity(cls, dto: GrudgeDtoType) -> Grudge:
+        grudge = Grudge()
 
-def dto_to_grudge(dto: GrudgeDtoType) -> Grudge:
-    grudge = Grudge(user_id=dto.user_id, post_id=dto.post_id)
+        if isinstance(dto, CreateGrudgeDto):
+            grudge.user_id = dto.user_id
+            grudge.post_id = dto.post_id
 
-    if isinstance(dto, GrudgeDto):
-        grudge.id = dto.id
+        if isinstance(dto, GrudgeDto):
+            grudge.id = dto.id
 
-    return grudge
+        return grudge
+
+    @classmethod
+    def update(cls, entity: Grudge, dto: GrudgeDto) -> Grudge:
+        return entity
