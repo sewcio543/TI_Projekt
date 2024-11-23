@@ -1,17 +1,19 @@
 from pydantic import BaseModel
 
 
-class PostDto(BaseModel):
+class CommentDto(BaseModel):
     id: int | None
     content: str
     user_id: int
+    post_id: int
 
 
-class CreatePostDto(BaseModel):
+class CreateCommentDto(BaseModel):
     content: str
     user_id: int
+    post_id: int
 
 
-class UpdatePostDto(BaseModel):
+class UpdateCommentDto(BaseModel):
     id: int | None
     content: str

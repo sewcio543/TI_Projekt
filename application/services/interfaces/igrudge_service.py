@@ -1,24 +1,20 @@
 from abc import ABC, abstractmethod
 from typing import Iterable
 
-from shared.dto.post_dto import CreatePostDto, PostDto, UpdatePostDto
+from shared.dto.grudge_dto import CreateGrudgeDto, GrudgeDto
 
 
-class IPostService(ABC):
+class IGrudgeService(ABC):
     @abstractmethod
     async def get_by_id(self, id: int):
         raise NotImplementedError
 
     @abstractmethod
-    async def get_all(self) -> Iterable[PostDto]:
+    async def get_all(self) -> Iterable[GrudgeDto]:
         raise NotImplementedError
 
     @abstractmethod
-    async def create(self, dto: CreatePostDto) -> int:
-        raise NotImplementedError
-
-    @abstractmethod
-    async def update(self, dto: UpdatePostDto) -> PostDto:
+    async def create(self, dto: CreateGrudgeDto) -> int:
         raise NotImplementedError
 
     @abstractmethod

@@ -1,7 +1,7 @@
 from collections.abc import Iterable
 
-from sqlmodel import SQLModel, select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlmodel import SQLModel, select
 
 from domain.contracts.irepository import IRepository
 

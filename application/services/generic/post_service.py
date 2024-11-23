@@ -1,15 +1,15 @@
 from typing import Iterable
 
-from sqlmodel import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from application.mapping.mapping import post_to_dto, dto_to_post
+from application.mapping.mapping import dto_to_post, post_to_dto
 from application.services.interfaces.ipost_service import IPostService
 from domain.contracts.ipost_repository import IPostRepository
-from shared.dto.post_dto import CreatePostDto, UpdatePostDto, PostDto
+from shared.dto.post_dto import CreatePostDto, PostDto, UpdatePostDto
 
 
 class PostService(IPostService):
-    def __init__(self, session: Session, repository: IPostRepository) -> None:
+    def __init__(self, session: AsyncSession, repository: IPostRepository) -> None:
         self.session = session
         self.repository = repository
 
@@ -42,7 +42,7 @@ class PostService(IPostService):
 
         return post.id
 
-    async def update(self, dto: UpdatePostDto) -> None:
+    async def update(self, dto: UpdatePostDto) -> PostDto:
         if dto is None:
             raise ValueError("Invalid entity")
 
@@ -57,7 +57,7 @@ class PostService(IPostService):
         # ! TODO: smart way to update entity
         entity_.content = dto.content
         await self.session.commit()
-        
+
         return post_to_dto(entity_)
 
     async def delete(self, id: int) -> None:

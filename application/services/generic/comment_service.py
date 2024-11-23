@@ -2,18 +2,18 @@ from typing import Iterable
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from application.mapping.mapping import dto_to_user, user_to_dto
-from application.services.interfaces.iuser_service import IUserService
-from domain.contracts.iuser_repository import IUserRepository
-from shared.dto.user_dto import CreateUserDto, UpdateUserDto, UserDto
+from application.mapping.mapping import comment_to_dto, dto_to_comment
+from application.services.interfaces.icomment_service import ICommentService
+from domain.contracts.icomment_repository import ICommentRepository
+from shared.dto.comment_dto import CommentDto, CreateCommentDto, UpdateCommentDto
 
 
-class UserService(IUserService):
-    def __init__(self, session: AsyncSession, repository: IUserRepository) -> None:
+class CommentService(ICommentService):
+    def __init__(self, session: AsyncSession, repository: ICommentRepository) -> None:
         self.session = session
         self.repository = repository
 
-    async def get_by_id(self, id: int) -> UserDto:
+    async def get_by_id(self, id: int) -> CommentDto:
         if id < 0:
             raise ValueError("Invalid id")
 
@@ -22,27 +22,27 @@ class UserService(IUserService):
         if entity is None:
             raise ValueError("Entity not found")
 
-        return user_to_dto(entity)
+        return comment_to_dto(entity)
 
-    async def get_all(self) -> Iterable[UserDto]:
-        users = await self.repository.get_all()
-        return map(user_to_dto, users)
+    async def get_all(self) -> Iterable[CommentDto]:
+        Comments = await self.repository.get_all()
+        return map(comment_to_dto, Comments)
 
-    async def create(self, dto: CreateUserDto) -> int:
+    async def create(self, dto: CreateCommentDto) -> int:
         if dto is None:
             raise ValueError("Invalid entity")
 
-        user = dto_to_user(dto)
+        Comment = dto_to_comment(dto)
 
-        await self.repository.insert(user)
+        await self.repository.insert(Comment)
         await self.session.commit()
 
-        if user.id is None:
+        if Comment.id is None:
             raise ValueError("Entity not created")
 
-        return user.id
+        return Comment.id
 
-    async def update(self, dto: UpdateUserDto) -> UserDto:
+    async def update(self, dto: UpdateCommentDto) -> CommentDto:
         if dto is None:
             raise ValueError("Invalid entity")
 
@@ -55,10 +55,10 @@ class UserService(IUserService):
             raise ValueError("Entity not found")
 
         # ! TODO: smart way to update entity
-        entity_.login = dto.login
+        entity_.content = dto.content
         await self.session.commit()
 
-        return user_to_dto(entity_)
+        return comment_to_dto(entity_)
 
     async def delete(self, id: int) -> None:
         if id < 0:

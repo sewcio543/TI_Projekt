@@ -1,10 +1,10 @@
-from domain.contracts.ipost_repository import IPostRepository
+from domain.contracts.icomment_repository import ICommentRepository
+from domain.models.db_models import Comment
 from infrastructure.repositories.repository import Repository
-from domain.models.db_models import Post
 
 
-class PostRepository(Repository[Post], IPostRepository):
-    model = Post
+class CommentRepository(Repository[Comment], ICommentRepository):
+    model = Comment
 
     async def exists(self, id: int) -> bool:
         entity = await self.session.get(self.model, id)
