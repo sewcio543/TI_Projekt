@@ -2,13 +2,15 @@ from typing import Iterable
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from application.mapping.mapping import dto_to_post, post_to_dto
+from application.mapping.mapping import PostMapper
 from application.services.interfaces.ipost_service import IPostService
 from domain.contracts.ipost_repository import IPostRepository
 from shared.dto.post_dto import CreatePostDto, PostDto, UpdatePostDto
 
 
 class PostService(IPostService):
+    mapper = PostMapper
+
     def __init__(self, session: AsyncSession, repository: IPostRepository) -> None:
         self.session = session
         self.repository = repository
@@ -22,25 +24,25 @@ class PostService(IPostService):
         if entity is None:
             raise ValueError("Entity not found")
 
-        return post_to_dto(entity)
+        return self.mapper.to_dto(entity)
 
     async def get_all(self) -> Iterable[PostDto]:
-        posts = await self.repository.get_all()
-        return map(post_to_dto, posts)
+        entities = await self.repository.get_all()
+        return map(self.mapper.to_dto, entities)
 
     async def create(self, dto: CreatePostDto) -> int:
         if dto is None:
             raise ValueError("Invalid entity")
 
-        post = dto_to_post(dto)
+        entity = self.mapper.to_entity(dto)
 
-        await self.repository.insert(post)
+        await self.repository.insert(entity)
         await self.session.commit()
 
-        if post.id is None:
+        if entity.id is None:
             raise ValueError("Entity not created")
 
-        return post.id
+        return entity.id
 
     async def update(self, dto: UpdatePostDto) -> PostDto:
         if dto is None:
@@ -49,16 +51,16 @@ class PostService(IPostService):
         if dto.id is None or dto.id < 0:
             raise ValueError("Invalid id")
 
-        entity_ = await self.repository.get(dto.id)
+        entity = await self.repository.get(dto.id)
 
-        if entity_ is None:
+        if entity is None:
             raise ValueError("Entity not found")
 
         # ! TODO: smart way to update entity
-        entity_.content = dto.content
+        entity.content = dto.content
         await self.session.commit()
 
-        return post_to_dto(entity_)
+        return self.mapper.to_dto(entity)
 
     async def delete(self, id: int) -> None:
         if id < 0:
