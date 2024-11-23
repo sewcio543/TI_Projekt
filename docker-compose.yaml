@@ -17,17 +17,13 @@ services:
   alembic:
     build:
       context: ./
-      dockerfile: Dockerfile_alembic
+      dockerfile: migrations/Dockerfile
     container_name: alembic
     depends_on:
       - db
     environment:
       - PG_DSN=${PG_DSN}
-      # - PG_USER=${PG_USER} # TODO DSN works, but individual env vars don't
-      # - PG_PASSWORD=${PG_PASSWORD}
-      # - PG_HOST=${PG_HOST}
-      # - PG_PORT=${PG_PORT}
-      # - PG_DB=${PG_DB}
+      - DATABASE=POSTGRES
     command: >
       sh -c "
       alembic upgrade head && echo 'Migrations applied successfully.'
@@ -37,13 +33,14 @@ services:
   api:
     build:
       context: ./
-      dockerfile: Dockerfile
+      dockerfile: api/Dockerfile
     container_name: fastapi
     depends_on:
       - db
       - alembic
     environment:
       - PG_DSN=${PG_DSN}
+      - DATABASE=POSTGRES
     ports:
       - "8000:8000"
     volumes:

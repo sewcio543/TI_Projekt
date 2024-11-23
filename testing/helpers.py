@@ -1,9 +1,10 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from api.log import log
 from domain.models.db_models import Comment, Grudge, Post, User
 
 
-def seed_database(session: AsyncSession) -> None:
+async def seed_database(session: AsyncSession) -> None:
     user1 = User(login="login1")
     user2 = User(login="login2")
 
@@ -31,3 +32,5 @@ def seed_database(session: AsyncSession) -> None:
         comment3,
     ]
     session.add_all(entities)
+    _ = session.commit()
+    log.info("Database seeded with mock data")

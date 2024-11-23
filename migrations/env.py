@@ -75,9 +75,8 @@ async def run_migrations_online():
     # than we HAVE to use host=localhost and port=5454
     # which points to DB running inside container (docker-compose)
     connection = get_connection()
-    url = connection.url
-    log.info(f"Using url: {url}")
-    connectable = create_async_engine(url, future=True)
+    log.info(f"Using url: {connection.url}")
+    connectable = connection.get_engine()
 
     async with connectable.connect() as connection:
         await connection.run_sync(do_run_migrations)

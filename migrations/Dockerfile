@@ -11,23 +11,16 @@ ENV PYTHONFAULTHANDLER=1 \
     PYTHONPATH="$PYTHONPATH:/install/lib/python3.11/site-packages"
 
 ARG PG_DSN
-ARG PG_USER
-ARG PG_PASSWORD
-ARG PG_HOST
-ARG PG_PORT
-ARG PG_DB
-ENV PG_USER=${PG_USER}
-ENV PG_PASSWORD=${PG_PASSWORD}
-ENV PG_HOST=${PG_HOST}
-ENV PG_PORT=${PG_PORT}
-ENV PG_DB=${PG_DB}
+ARG DATABASE
 ENV PG_DSN=${PG_DSN}
+ENV DATABASE="POSTGRES"
 
 WORKDIR /app
 
 COPY api /app/api
 COPY domain /app/domain
 COPY migrations  /app/migrations
+COPY connections /app/connections
 COPY ./alembic.ini  /app/
 COPY ./requirements.txt /app/
 
