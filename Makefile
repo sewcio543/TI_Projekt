@@ -1,7 +1,15 @@
 run_api:
 	fastapi dev api/main.py
 run_docker:
-	docker build -t my-fastapi-app .
-	docker run -d -p 8000:8000 my-fastapi-app
-	docker ps
-	
+	docker-compose up
+setup:
+	python -m pip install -r requirements.txt
+	python -m pip install -r requirements_dev.txt
+lint:
+	python -m flake8 --config tox.ini
+format:
+	black .
+typecheck:
+	python -m mypy . || true
+	python -m mypy --install-types --non-interactive
+	python -m mypy . --ignore-missing-imports

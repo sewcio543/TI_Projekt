@@ -1,48 +1,59 @@
-import os
-
 from fastapi import FastAPI, status
-from sqlmodel import Session, SQLModel, create_engine
+from sqlalchemy import text
 
+import api.routers.comment_controller as comments
+import api.routers.grudge_controller as grudges
+import api.routers.post_controller as posts
+import api.routers.user_controller as users
+from api.helpers import Repositories, Services
+from application.services.generic.comment_service import CommentService
+from application.services.generic.grudge_service import GrudgeService
+from application.services.generic.post_service import PostService
 from application.services.generic.user_service import UserService
+from connections.setup import get_connection
+from infrastructure.repositories.comment_repository import CommentRepository
+from infrastructure.repositories.grudge_repository import GrudgeRepository
+from infrastructure.repositories.post_repository import PostRepository
 from infrastructure.repositories.user_respository import UserRepository
-from shared.dto.user_dto import CreateUserDto, UpdateUserDto, UserDto
 
 app = FastAPI()
 
-sqlite_file_name = "database.db"
-connection_string = f"sqlite:///{sqlite_file_name}"
 
-connection_string = os.environ.get("DATABASE_URL", connection_string)
+connection = get_connection()
+session = connection.connect()
 
-engine = create_engine(connection_string)
-SQLModel.metadata.create_all(engine)
-session = Session(engine)
+repositories = Repositories(
+    users=UserRepository(session=session),
+    posts=PostRepository(session=session),
+    comments=CommentRepository(session=session),
+    grudges=GrudgeRepository(session=session),
+)
 
-repository = UserRepository(session=session)
+services = Services(
+    users=UserService(session=session, repository=repositories.users),
+    posts=PostService(session=session, repository=repositories.posts),
+    comments=CommentService(session=session, repository=repositories.comments),
+    grudges=GrudgeService(session=session, repository=repositories.grudges),
+)
 
-service = UserService(session=session, repository=repository)
+user_controller = users.UserController(service=services.users)
+post_controller = posts.PostController(service=services.posts)
+comment_controller = comments.CommentController(service=services.comments)
+grudge_controller = grudges.GrudgeController(service=services.grudges)
 
-
-@app.get("/user/{user_id}", response_model=UserDto)
-def get_user(user_id: int) -> UserDto:
-    entity = service.get_by_id(user_id)
-    return entity
-
-
-@app.get("/user/")
-def get_all_users() -> list[UserDto]:
-    return list(service.get_all())
-
-
-@app.put("/user/{user_id}")
-def update_user(user_id: int, user: UpdateUserDto):
-    if user_id != user.id:
-        # ! TODO: maybe some kind of error and middleware
-        return {"error": "id in path and in body do not match"}
-
-    service.update(user)
+app.include_router(user_controller.router)
+app.include_router(post_controller.router)
+app.include_router(comment_controller.router)
+app.include_router(grudge_controller.router)
 
 
-@app.post("/user/", status_code=status.HTTP_201_CREATED)
-def create_user(user: CreateUserDto):
-    service.create(user)
+@app.get("/health", status_code=status.HTTP_200_OK)
+async def health_check():
+    return {"status": "oj bratku, działa"}
+
+
+@app.get("/db_health", status_code=status.HTTP_200_OK)
+async def db_health_check():
+    async with session as sess:
+        cursor = await sess.execute(text("SELECT version()"))
+        return f"Ok {cursor.one()[0]}"

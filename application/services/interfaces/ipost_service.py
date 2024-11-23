@@ -1,24 +1,24 @@
 from abc import ABC, abstractmethod
-from collections.abc import Iterable
+from typing import Iterable
 
-from shared.dto.user_dto import CreateUserDto, UpdateUserDto, UserDto
+from shared.dto.post_dto import CreatePostDto, PostDto, UpdatePostDto
 
 
-class IUserService(ABC):
+class IPostService(ABC):
     @abstractmethod
-    async def get_by_id(self, id: int) -> UserDto:
+    async def get_by_id(self, id: int):
         raise NotImplementedError
 
     @abstractmethod
-    async def get_all(self) -> Iterable[UserDto]:
+    async def get_all(self) -> Iterable[PostDto]:
         raise NotImplementedError
 
     @abstractmethod
-    async def create(self, dto: CreateUserDto) -> int:
+    async def create(self, dto: CreatePostDto) -> int:
         raise NotImplementedError
 
     @abstractmethod
-    async def update(self, dto: UpdateUserDto) -> UserDto:
+    async def update(self, dto: UpdatePostDto) -> PostDto:
         raise NotImplementedError
 
     @abstractmethod
