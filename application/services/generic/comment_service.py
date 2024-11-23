@@ -51,16 +51,15 @@ class CommentService(ICommentService):
         if dto.id is None or dto.id < 0:
             raise ValueError("Invalid id")
 
-        entity_ = await self.repository.get(dto.id)
+        entity = await self.repository.get(dto.id)
 
-        if entity_ is None:
+        if entity is None:
             raise ValueError("Entity not found")
 
-        # ! TODO: smart way to update entity
-        entity_.content = dto.content
+        entity = self.mapper.update(entity=entity, dto=dto)
         await self.session.commit()
 
-        return self.mapper.to_dto(entity_)
+        return self.mapper.to_dto(entity)
 
     async def delete(self, id: int) -> None:
         if id < 0:

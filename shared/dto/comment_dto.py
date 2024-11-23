@@ -13,8 +13,8 @@ class CommentDto(BaseModel):
 
 class CreateCommentDto(BaseModel):
     content: str
-    user: UserDto
-    post: PostDto
+    user_id: int
+    post_id: int
 
 
 class UpdateCommentDto(BaseModel):

@@ -11,7 +11,7 @@ class PostDto(BaseModel):
 
 class CreatePostDto(BaseModel):
     content: str
-    user: UserDto
+    user_id: int
 
 
 class UpdatePostDto(BaseModel):

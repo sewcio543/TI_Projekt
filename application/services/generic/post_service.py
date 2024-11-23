@@ -56,8 +56,7 @@ class PostService(IPostService):
         if entity is None:
             raise ValueError("Entity not found")
 
-        # ! TODO: smart way to update entity
-        entity.content = dto.content
+        entity = self.mapper.update(entity=entity, dto=dto)
         await self.session.commit()
 
         return self.mapper.to_dto(entity)

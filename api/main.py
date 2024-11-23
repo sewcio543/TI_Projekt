@@ -15,12 +15,14 @@ from infrastructure.repositories.comment_repository import CommentRepository
 from infrastructure.repositories.grudge_repository import GrudgeRepository
 from infrastructure.repositories.post_repository import PostRepository
 from infrastructure.repositories.user_respository import UserRepository
+from testing.helpers import seed_database
 
 app = FastAPI()
 
 
 connection = get_connection()
 session = connection.connect()
+seed_database(session)
 
 repositories = Repositories(
     users=UserRepository(session=session),

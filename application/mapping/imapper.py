@@ -13,3 +13,8 @@ class DtoMapper[T](ABC):
     @abstractmethod
     def to_entity(cls, dto: Any) -> T:
         raise NotImplementedError
+
+    @classmethod
+    @abstractmethod
+    def update(cls, entity: T, dto: Any) -> T:
+        raise NotImplementedError

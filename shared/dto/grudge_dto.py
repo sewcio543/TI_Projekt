@@ -11,5 +11,5 @@ class GrudgeDto(BaseModel):
 
 
 class CreateGrudgeDto(BaseModel):
-    user: UserDto
-    post: PostDto
+    user_id: int
+    post_id: int

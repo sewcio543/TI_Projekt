@@ -56,8 +56,7 @@ class UserService(IUserService):
         if entity is None:
             raise ValueError("Entity not found")
 
-        # ! TODO: smart way to update entity
-        entity.login = dto.login
+        entity = self.mapper.update(entity=entity, dto=dto)
         await self.session.commit()
 
         return self.mapper.to_dto(entity)
