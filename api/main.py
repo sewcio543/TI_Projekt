@@ -1,4 +1,5 @@
 from fastapi import FastAPI, status
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 
 import api.routers.comment_controller as comments
@@ -11,6 +12,16 @@ from api.dependencies import dep
 # from testing.helpers import seed_database
 
 app = FastAPI(title="GrudgeHub API")
+
+origins = ["http://localhost:3000"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(users.router)
 app.include_router(posts.router)
