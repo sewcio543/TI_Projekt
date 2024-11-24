@@ -6,7 +6,7 @@ from shared.dto.grudge_dto import CreateGrudgeDto, GrudgeDto
 
 class IGrudgeService(ABC):
     @abstractmethod
-    async def get_by_id(self, id: int):
+    async def get_by_id(self, id: int) -> GrudgeDto:
         raise NotImplementedError
 
     @abstractmethod

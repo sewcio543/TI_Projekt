@@ -6,7 +6,7 @@ from shared.dto.comment_dto import CommentDto, CreateCommentDto, UpdateCommentDt
 
 class ICommentService(ABC):
     @abstractmethod
-    async def get_by_id(self, id: int):
+    async def get_by_id(self, id: int) -> CommentDto:
         raise NotImplementedError
 
     @abstractmethod

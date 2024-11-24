@@ -1,53 +1,78 @@
-from fastapi import APIRouter, status
+from fastapi import APIRouter, Depends, HTTPException, status
 
-from application.services.interfaces.icomment_service import ICommentService
+from api.dependencies import dep
+from api.routers.identity_controller import Authorization, verify_user
 from shared.dto import CommentDto, CreateCommentDto, UpdateCommentDto
 
+service = dep.services.comments
 
-class CommentController:
-    def __init__(self, service: ICommentService) -> None:
-        self.service = service
-        self.router = APIRouter(prefix="/comment", tags=["comment"])
-        self.router.add_api_route(
-            "/{comment_id}",
-            self.get,
-            response_model=CommentDto,
-            methods=["GET"],
-        )
-        self.router.add_api_route(
-            "/", self.get_all, response_model=list[CommentDto], methods=["GET"]
-        )
-        self.router.add_api_route("/{comment_id}", self.update, methods=["PUT"])
-        self.router.add_api_route(
-            "/",
-            self.create,
-            status_code=status.HTTP_201_CREATED,
-            methods=["POST"],
-        )
-        self.router.add_api_route(
-            "/{comment_id}",
-            self.delete,
-            status_code=status.HTTP_200_OK,
-            methods=["DELETE"],
+router = APIRouter(prefix="/comment", tags=["comment"])
+
+
+@router.get("/{comment_id}", response_model=CommentDto)
+async def get(comment_id: int) -> CommentDto:
+    entity = await service.get_by_id(comment_id)
+    return entity
+
+
+@router.get("/", response_model=list[CommentDto])
+async def get_all() -> list[CommentDto]:
+    comments = await service.get_all()
+    return list(comments)
+
+
+@router.put("/{comment_id}", response_model=CommentDto)
+async def update(comment_id: int, dto: UpdateCommentDto, user: Authorization):
+    if comment_id != dto.id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="id in path and in body do not match",
         )
 
-    async def get(self, comment_id: int) -> CommentDto:
-        entity = await self.service.get_by_id(comment_id)
-        return entity
+    comment = await service.get_by_id(comment_id)
 
-    async def get_all(self) -> list[CommentDto]:
-        comments = await self.service.get_all()
-        return list(comments)
+    if comment is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="This comment does not exist",
+        )
 
-    async def update(self, comment_id: int, comment: UpdateCommentDto):
-        if comment_id != comment.id:
-            return {"error": "id in path and in body do not match"}
-        return await self.service.update(comment)
+    if comment.user.id != user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You can't update other users' comments",
+        )
 
-    async def create(self, comment: CreateCommentDto):
-        comment_id = await self.service.create(comment)
-        return {"id": comment_id}
+    return await service.update(dto)
 
-    async def delete(self, comment_id: int):
-        await self.service.delete(comment_id)
-        return {"msg": f"deleted comment {comment_id}"}
+
+@router.post("/", status_code=status.HTTP_201_CREATED)
+async def create(dto: CreateCommentDto, user: Authorization):
+    if dto.user_id != user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You can't create comments for other users",
+        )
+
+    comment_id = await service.create(dto)
+    return {"id": comment_id}
+
+
+@router.delete("/{comment_id}", status_code=status.HTTP_200_OK)
+async def delete(comment_id: int, user: Authorization):
+    comment = await service.get_by_id(comment_id)
+
+    if comment is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="This comment does not exist",
+        )
+
+    if comment.user.id != user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You can't delete other users' comments",
+        )
+
+    await service.delete(comment_id)
+    return {"msg": f"deleted comment {comment_id}"}

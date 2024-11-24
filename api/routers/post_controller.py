@@ -1,47 +1,78 @@
-from fastapi import APIRouter, status
+from fastapi import APIRouter, HTTPException, status
 
-from application.services.interfaces.ipost_service import IPostService
+from api.dependencies import dep
+from api.routers.identity_controller import Authorization
 from shared.dto import CreatePostDto, PostDto, UpdatePostDto
 
+service = dep.services.posts
 
-class PostController:
-    def __init__(self, service: IPostService) -> None:
-        self.service = service
-        self.router = APIRouter(prefix="/post", tags=["post"])
-        self.router.add_api_route(
-            "/{post_id}", self.get, response_model=PostDto, methods=["GET"]
+router = APIRouter(prefix="/post", tags=["post"])
+
+
+@router.get("/{post_id}", response_model=PostDto)
+async def get(post_id: int) -> PostDto:
+    entity = await service.get_by_id(post_id)
+    return entity
+
+
+@router.get("/", response_model=list[PostDto])
+async def get_all() -> list[PostDto]:
+    posts = await service.get_all()
+    return list(posts)
+
+
+@router.put("/{post_id}", response_model=PostDto)
+async def update(post_id: int, dto: UpdatePostDto, user: Authorization):
+    if post_id != dto.id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="id in path and in body do not match",
         )
-        self.router.add_api_route(
-            "/", self.get_all, response_model=list[PostDto], methods=["GET"]
-        )
-        self.router.add_api_route("/{post_id}", self.update, methods=["PUT"])
-        self.router.add_api_route(
-            "/", self.create, status_code=status.HTTP_201_CREATED, methods=["POST"]
-        )
-        self.router.add_api_route(
-            "/{post_id}",
-            self.delete,
-            status_code=status.HTTP_200_OK,
-            methods=["DELETE"],
+
+    post = await service.get_by_id(post_id)
+
+    if post is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="This post does not exist",
         )
 
-    async def get(self, post_id: int) -> PostDto:
-        entity = await self.service.get_by_id(post_id)
-        return entity
+    if post.user.id != user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You can't update other users' posts",
+        )
 
-    async def get_all(self) -> list[PostDto]:
-        posts = await self.service.get_all()
-        return list(posts)
+    return await service.update(dto)
 
-    async def update(self, post_id: int, post: UpdatePostDto):
-        if post_id != post.id:
-            return {"error": "id in path and in body do not match"}
-        return await self.service.update(post)
 
-    async def create(self, post: CreatePostDto):
-        post_id = await self.service.create(post)
-        return {"id": post_id}
+@router.post("/", status_code=status.HTTP_201_CREATED)
+async def create(dto: CreatePostDto, user: Authorization):
+    if dto.user_id != user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You can't create posts for other users",
+        )
 
-    async def delete(self, post_id: int):
-        await self.service.delete(post_id)
-        return {"msg": f"deleted post {post_id}"}
+    post_id = await service.create(dto)
+    return {"id": post_id}
+
+
+@router.delete("/{post_id}", status_code=status.HTTP_200_OK)
+async def delete(post_id: int, user: Authorization):
+    post = await service.get_by_id(post_id)
+
+    if post is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="This post does not exist",
+        )
+
+    if post.user.id != user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You can't delete other users' posts",
+        )
+
+    await service.delete(post_id)
+    return {"msg": f"deleted post {post_id}"}

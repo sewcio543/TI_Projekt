@@ -10,6 +10,10 @@ class IUserService(ABC):
         raise NotImplementedError
 
     @abstractmethod
+    async def get_by_login(self, login: str) -> UserDto:
+        raise NotImplementedError
+
+    @abstractmethod
     async def get_all(self) -> Iterable[UserDto]:
         raise NotImplementedError
 
