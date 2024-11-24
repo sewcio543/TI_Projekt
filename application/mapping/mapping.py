@@ -17,17 +17,13 @@ class UserMapper(DtoMapper[User]):
         return UserDto(id=entity.id, login=entity.login)
 
     @classmethod
-    def to_entity(cls, dto: UserDtoType) -> User:
-        user = User(login=dto.login)
-
-        if isinstance(dto, (UserDto, UpdateUserDto)):
-            user.id = dto.id
-
-        return user
+    def to_entity(cls, dto: CreateUserDto) -> User:
+        return User(login=dto.login, hashed_password=dto.password)
 
     @classmethod
     def update(cls, entity: User, dto: UpdateUserDto) -> User:
         entity.login = dto.login
+        entity.hashed_password = dto.password
         return entity
 
 
@@ -38,19 +34,8 @@ class PostMapper(DtoMapper[Post]):
         return PostDto(id=entity.id, content=entity.content, user=user_dto)
 
     @classmethod
-    def to_entity(cls, dto: PostDtoType) -> Post:
-        post = Post(content=dto.content)
-
-        if isinstance(dto, CreatePostDto):
-            post.user_id = dto.user_id
-
-        if isinstance(dto, PostDto):
-            post.user_id = dto.user.id  # type: ignore
-
-        if isinstance(dto, (PostDto, UpdatePostDto)):
-            post.id = dto.id
-
-        return post
+    def to_entity(cls, dto: CreatePostDto) -> Post:
+        return Post(content=dto.content, user_id=dto.user_id)
 
     @classmethod
     def update(cls, entity: Post, dto: UpdatePostDto) -> Post:
@@ -75,21 +60,8 @@ class CommentMapper(DtoMapper[Comment]):
         )
 
     @classmethod
-    def to_entity(cls, dto: CommentDtoType) -> Comment:
-        comment = Comment(content=dto.content)
-
-        if isinstance(dto, CreateCommentDto):
-            comment.user_id = dto.user_id
-            comment.post_id = dto.post_id
-
-        if isinstance(dto, CommentDto):
-            comment.user_id = dto.user.id  # type: ignore
-            comment.post_id = dto.post.id  # type: ignore
-
-        if isinstance(dto, (CommentDto, UpdateCommentDto)):
-            comment.id = dto.id
-
-        return comment
+    def to_entity(cls, dto: CreateCommentDto) -> Comment:
+        return Comment(content=dto.content, user_id=dto.user_id, post_id=dto.post_id)
 
     @classmethod
     def update(cls, entity: Comment, dto: UpdateCommentDto) -> Comment:
@@ -109,17 +81,8 @@ class GrudgeMapper(DtoMapper[Grudge]):
         return GrudgeDto(id=entity.id, user=user_dto, post=post_dto)
 
     @classmethod
-    def to_entity(cls, dto: GrudgeDtoType) -> Grudge:
-        grudge = Grudge()
-
-        if isinstance(dto, CreateGrudgeDto):
-            grudge.user_id = dto.user_id
-            grudge.post_id = dto.post_id
-
-        if isinstance(dto, GrudgeDto):
-            grudge.id = dto.id
-
-        return grudge
+    def to_entity(cls, dto: CreateGrudgeDto) -> Grudge:
+        return Grudge(user_id=dto.user_id, post_id=dto.post_id)
 
     @classmethod
     def update(cls, entity: Grudge, dto: GrudgeDto) -> Grudge:

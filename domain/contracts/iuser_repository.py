@@ -11,5 +11,8 @@ class IUserRepository(IRepository[User]):
     async def get_all(self) -> Iterable[User]:
         raise NotImplementedError
 
-    async def exists(self, id: int) -> bool:
+    async def exists(self, login: str) -> bool:
+        raise NotImplementedError
+
+    async def get_by_login(self, login: str) -> User | None:
         raise NotImplementedError

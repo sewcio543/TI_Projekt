@@ -7,6 +7,7 @@ class Base(SQLModel): ...
 class User(Base, table=True):
     id: int | None = Field(default=None, primary_key=True)
     login: str
+    hashed_password: str
 
     posts: list["Post"] = Relationship(back_populates="user")
     comments: list["Comment"] = Relationship(back_populates="user")
