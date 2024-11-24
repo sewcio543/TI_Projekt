@@ -6,7 +6,7 @@ from shared.dto.post_dto import CreatePostDto, PostDto, UpdatePostDto
 
 class IPostService(ABC):
     @abstractmethod
-    async def get_by_id(self, id: int):
+    async def get_by_id(self, id: int) -> PostDto:
         raise NotImplementedError
 
     @abstractmethod

@@ -1,41 +1,53 @@
-from fastapi import APIRouter, status
+from fastapi import APIRouter, HTTPException, status
 
-from application.services.interfaces.igrudge_service import IGrudgeService
+from api.dependencies import dep
+from api.routers.identity_controller import Authorization
 from shared.dto import CreateGrudgeDto, GrudgeDto
 
+service = dep.services.grudges
 
-class GrudgeController:
-    def __init__(self, service: IGrudgeService) -> None:
-        self.service = service
-        self.router = APIRouter(prefix="/grudge", tags=["grudge"])
-        self.router.add_api_route(
-            "/{grudge_id}", self.get, response_model=GrudgeDto, methods=["GET"]
+router = APIRouter(prefix="/grudge", tags=["grudge"])
+
+
+@router.get("/{grudge_id}", response_model=GrudgeDto)
+async def get(grudge_id: int) -> GrudgeDto:
+    entity = await service.get_by_id(grudge_id)
+    return entity
+
+
+@router.get("/", response_model=list[GrudgeDto])
+async def get_all() -> list[GrudgeDto]:
+    posts = await service.get_all()
+    return list(posts)
+
+
+@router.post("/", status_code=status.HTTP_201_CREATED)
+async def create(post: CreateGrudgeDto, user: Authorization):
+    if post.user_id != user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You can't create grudges for other users",
         )
-        self.router.add_api_route(
-            "/", self.get_all, response_model=list[GrudgeDto], methods=["GET"]
+
+    grudge_id = await service.create(post)
+    return {"id": grudge_id}
+
+
+@router.delete("/{grudge_id}", status_code=status.HTTP_200_OK)
+async def delete(grudge_id: int, user: Authorization):
+    grudge = await service.get_by_id(grudge_id)
+
+    if grudge is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="This grudge does not exist",
         )
-        self.router.add_api_route(
-            "/", self.create, status_code=status.HTTP_201_CREATED, methods=["POST"]
-        )
-        self.router.add_api_route(
-            "/{grudge_id}",
-            self.delete,
-            status_code=status.HTTP_200_OK,
-            methods=["DELETE"],
+
+    if grudge.user.id != user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You can't delete grudges from other users",
         )
 
-    async def get(self, grudge_id: int) -> GrudgeDto:
-        entity = await self.service.get_by_id(grudge_id)
-        return entity
-
-    async def get_all(self) -> list[GrudgeDto]:
-        posts = await self.service.get_all()
-        return list(posts)
-
-    async def create(self, post: CreateGrudgeDto):
-        grudge_id = await self.service.create(post)
-        return {"id": grudge_id}
-
-    async def delete(self, grudge_id: int):
-        await self.service.delete(grudge_id)
-        return {"msg": f"deleted post {grudge_id}"}
+    await service.delete(grudge_id)
+    return {"msg": f"deleted grudge {grudge_id}"}
