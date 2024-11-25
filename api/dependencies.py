@@ -18,6 +18,8 @@ from infrastructure.repositories.comment_repository import CommentRepository
 from infrastructure.repositories.grudge_repository import GrudgeRepository
 from infrastructure.repositories.post_repository import PostRepository
 from infrastructure.repositories.user_respository import UserRepository
+from application.sentiment.moderator import Moderator
+from application.sentiment.textblob_analyzer import TextBlobAnalyzer
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
@@ -53,6 +55,7 @@ services = Services(
     identity=IdentityService(repository=repositories.users, hasher=pwd_context),
 )
 
+moderator = Moderator(analyzer=TextBlobAnalyzer)
 
 @dataclass
 class Dependencies:
@@ -62,6 +65,7 @@ class Dependencies:
     auth_scheme: OAuth2PasswordBearer
     pwd_context: CryptContext
     session: AsyncSession
+    moderator: Moderator
 
     def get(self, o: Any) -> Any:
         """Use as a dependency injection in FastAPI."""
@@ -75,4 +79,5 @@ dep = Dependencies(
     auth_scheme=oauth2_scheme,
     pwd_context=pwd_context,
     session=session,
+    moderator=moderator
 )
