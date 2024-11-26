@@ -43,6 +43,12 @@ async def update(post_id: int, dto: UpdatePostDto, user: Authorization):
             status_code=status.HTTP_403_FORBIDDEN,
             detail="You can't update other users' posts",
         )
+        
+    if not moderator.allows_content(dto.content):
+        raise HTTPException(
+            status_code=status.HTTP_418_IM_A_TEAPOT,
+            detail="This content is not allowed (to positive)",
+        )
 
     return await service.update(dto)
 
@@ -57,7 +63,7 @@ async def create(dto: CreatePostDto, user: Authorization):
     
     if not moderator.allows_content(dto.content):
         raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
+            status_code=status.HTTP_418_IM_A_TEAPOT,
             detail="This content is not allowed (to positive)",
         )
     
