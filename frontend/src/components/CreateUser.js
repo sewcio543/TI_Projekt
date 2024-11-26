@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { createUser } from "../apiService";
+import { createUser } from "../apiService/user";
 
 const CreateUser = () => {
   const [login, setLogin] = useState("");
