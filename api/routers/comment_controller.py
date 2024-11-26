@@ -5,6 +5,7 @@ from api.routers.identity_controller import Authorization, verify_user
 from shared.dto import CommentDto, CreateCommentDto, UpdateCommentDto
 
 service = dep.services.comments
+moderator = dep.moderator
 
 router = APIRouter(prefix="/comment", tags=["comment"])
 
@@ -42,6 +43,12 @@ async def update(comment_id: int, dto: UpdateCommentDto, user: Authorization):
             status_code=status.HTTP_403_FORBIDDEN,
             detail="You can't update other users' comments",
         )
+        
+    if not moderator.allows_content(dto.content):
+        raise HTTPException(
+            status_code=status.HTTP_418_IM_A_TEAPOT,
+            detail="This content is not allowed (to positive)",
+        )
 
     return await service.update(dto)
 
@@ -52,6 +59,12 @@ async def create(dto: CreateCommentDto, user: Authorization):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="You can't create comments for other users",
+        )
+    
+    if not moderator.allows_content(dto.content):
+        raise HTTPException(
+            status_code=status.HTTP_418_IM_A_TEAPOT,
+            detail="This content is not allowed (to positive)",
         )
 
     comment_id = await service.create(dto)
