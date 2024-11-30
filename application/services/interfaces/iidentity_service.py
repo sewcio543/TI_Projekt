@@ -9,3 +9,7 @@ class IIdentityService(ABC):
     @abstractmethod
     async def authenticate(self, dto: IdentityDto) -> UserDto | None:
         raise NotImplementedError
+
+    @abstractmethod
+    async def get_by_login(self, login: str) -> UserDto:
+        raise NotImplementedError
