@@ -8,20 +8,22 @@ import PostDetail from "./components/PostDetail";
 import PostList from "./components/PostList";
 import Login from "./components/pages/login";
 import Feed from "./components/pages/feed";
+import PrivateRoute from "./utils/privateRoute";
 
 const App = () => {
   return (
     <Router>
       <div>
         <Routes>
-          <Route path="/" element={<UserList />} />
-          <Route path="/user/:id" element={<UserDetail />} />
-          <Route path="/create-user" element={<CreateUser />} />
-          <Route path="/post/" element={<PostList />} />
-          <Route path="/posts/:id" element={<PostDetail />} />
-          <Route path="/create-post" element={<CreatePost />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/feed" element={<Feed />} />
+
+          <Route path="/" element={<PrivateRoute element={<UserList />} />} />
+          <Route path="/user/:id" element={<PrivateRoute element={<UserDetail />} />} />
+          <Route path="/create-user" element={<PrivateRoute element={<CreateUser />} />} />
+          <Route path="/post/" element={<PrivateRoute element={<PostList />} />} />
+          <Route path="/posts/:id" element={<PrivateRoute element={<PostDetail />} />} />
+          <Route path="/create-post" element={<PrivateRoute element={<CreatePost />} />} />
+          <Route path="/feed" element={<PrivateRoute element={<Feed />} />} />
         </Routes>
       </div>
     </Router>
