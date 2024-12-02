@@ -6,7 +6,8 @@ import UserList from "./components/UserList";
 import CreatePost from "./components/CreatePost";
 import PostDetail from "./components/PostDetail";
 import PostList from "./components/PostList";
-import Login from "./components/login";
+import Login from "./components/pages/login";
+import Feed from "./components/pages/feed";
 
 const App = () => {
   return (
@@ -20,6 +21,7 @@ const App = () => {
           <Route path="/posts/:id" element={<PostDetail />} />
           <Route path="/create-post" element={<CreatePost />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/feed" element={<Feed />} />
         </Routes>
       </div>
     </Router>

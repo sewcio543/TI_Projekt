@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 
 import { useDispatch } from "react-redux";
-import { logIn } from "../redux/reducer";
+import { logIn } from "../../redux/reducer";
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
@@ -36,7 +36,7 @@ const Login = () => {
             alert("Login successful! Token saved to session cookie.");
 
             // Redirect to home page
-            navigate("/home");
+            navigate("/feed");
 
         } catch (error) {
             console.error("Error logging in:", error);
