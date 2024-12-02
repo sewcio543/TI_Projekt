@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getUser } from "../apiService/user";
+import { getUser } from "../../apiService/user";
 
 const UserDetail = ({ match }) => {
   const [user, setUser] = useState(null);

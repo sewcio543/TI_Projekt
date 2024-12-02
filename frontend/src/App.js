@@ -1,11 +1,11 @@
 import React from "react";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
-import CreateUser from "./components/CreateUser";
-import UserDetail from "./components/UserDetail";
-import UserList from "./components/UserList";
-import CreatePost from "./components/CreatePost";
-import PostDetail from "./components/PostDetail";
-import PostList from "./components/PostList";
+import CreateUser from "./components/users/CreateUser";
+import UserDetail from "./components/users/UserDetail";
+import UserList from "./components/users/UserList";
+import CreatePost from "./components/posts/CreatePost";
+import PostDetail from "./components/posts/PostDetail";
+import PostList from "./components/posts/PostList";
 import Login from "./components/pages/login";
 import Feed from "./components/pages/feed";
 import PrivateRoute from "./utils/privateRoute";

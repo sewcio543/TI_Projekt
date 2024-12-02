@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Navbar from "../topbar/navbar";
 
 
 const Feed = () => {
@@ -16,6 +17,7 @@ const Feed = () => {
 
     return (
         <div>
+            <Navbar />
             <h1>Feed</h1>
         </div>
     );
