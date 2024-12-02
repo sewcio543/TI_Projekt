@@ -1,8 +1,6 @@
 
 import React, { useState } from "react";
 import NavbarMenuElement from "../shared/navbarMenuElement";
-import "../../styles/navbar.css";
-
 import { useDispatch } from "react-redux";
 import { logOut } from "../../redux/reducer"; // Assuming you have a logOut action in Redux
 
@@ -20,12 +18,13 @@ const Navbar = () => {
         alert("Logged out successfully.");
     };
     return (
-        <nav className="navbar-container">
-            <NavbarMenuElement initialLabel="Home" />
-            <NavbarMenuElement initialLabel="About" />
-
-            <NavbarMenuElement initialLabel="Log out" onClick={handleLogOut} />
-        </nav >
+        <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div className="container-fluid">
+                <NavbarMenuElement initialLabel="Home" className="navbar-brand" />
+                <NavbarMenuElement initialLabel="About" className="nav-link" />
+                <NavbarMenuElement initialLabel="Log out" onClick={handleLogOut} className="nav-link" />
+            </div>
+        </nav>
     )
 };
 

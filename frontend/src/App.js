@@ -10,6 +10,9 @@ import Login from "./components/pages/login";
 import Feed from "./components/pages/feed";
 import PrivateRoute from "./utils/privateRoute";
 
+// In your index.js or App.js
+import "bootstrap/dist/css/bootstrap.min.css";
+
 const App = () => {
   return (
     <Router>
