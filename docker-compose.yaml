@@ -30,11 +30,30 @@ services:
       "
     restart: "on-failure"
 
-  api_2:
+  content_api:
     build:
       context: ./
-      dockerfile: api/Dockerfile
-    container_name: fastapi
+      dockerfile: api/content_api/Dockerfile
+    container_name: content_api
+    depends_on:
+      - db
+      - alembic
+    environment:
+      - PG_DSN=${PG_DSN}
+      - DATABASE=POSTGRES
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./:/app/
+    command: >
+      sh -c "
+      uvicorn api.content_api.main:app --host 0.0.0.0 --port 8001 --reload
+      "
+  identity_api:
+    build:
+      context: ./
+      dockerfile: api/identity_api/Dockerfile
+    container_name: identity_api
     depends_on:
       - db
       - alembic
@@ -47,13 +66,13 @@ services:
       - ./:/app/
     command: >
       sh -c "
-      uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload
+      uvicorn api.identity_api.main:app --host 0.0.0.0 --port 8000 --reload
       "
-  identity_api:
+  people_api:
     build:
       context: ./
-      dockerfile: identity_api/Dockerfile
-    container_name: identity_api
+      dockerfile: api/people_api/Dockerfile
+    container_name: people_api
     depends_on:
       - db
       - alembic
@@ -61,12 +80,12 @@ services:
       - PG_DSN=${PG_DSN}
       - DATABASE=POSTGRES
     ports:
-      - "8080:8080"
+      - "8002:8002"
     volumes:
       - ./:/app/
     command: >
       sh -c "
-      uvicorn api.main:app --host 0.0.0.0 --port 8080 --reload
+      uvicorn api.people_api.main:app --host 0.0.0.0 --port 8002 --reload
       "
 
   frontend:

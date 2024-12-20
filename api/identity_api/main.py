@@ -1,52 +1,31 @@
-from datetime import timedelta
 from typing import Annotated
 
 from fastapi import Depends, FastAPI, HTTPException, status
-from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jwt.exceptions import InvalidTokenError
-from passlib.context import CryptContext
 
-from api.authorization import JWTTokenHandler, Token
-from application.services.generic.identity_service import IdentityService
-from connections.setup import get_connection
-from infrastructure.repositories.user_respository import UserRepository
+from api import settings
+from api.dependencies import dep
+from api.shared.authorization import Token
+from api.shared.cors import add_cors_middleware
 from shared.dto.identity_dto import IdentityDto
 from shared.dto.user_dto import UserDto
 
 auth_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
-SECRET_KEY = "dbf4e8585c184da6494f6b3dc5d44ef18d1aa69657914e39ebf832bc37e03535"
-ALGORITHM = "HS256"
-TOKEN_DURATION = timedelta(minutes=15)
-
-token_generator = JWTTokenHandler(
-    secret=SECRET_KEY,
-    algorithm=ALGORITHM,
-    duration=TOKEN_DURATION,
-)
-
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
-connection = get_connection()
-session = connection.connect()
-
-users_repository = UserRepository(session=session)
-service = IdentityService(repository=users_repository, hasher=pwd_context)
+token_generator = dep.token_generator
+pwd_context = dep.pwd_context
+service = dep.services.identity
 
 app = FastAPI(title="GrudgeHub Identity API")
-
-origins = ["http://localhost:3000", "http://localhost:8000"]
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+add_cors_middleware(
+    app,
+    origins=[
+        settings.FRONTEND_URL,
+        settings.PEOPLE_API_URL,
+        settings.CONTENT_API_URL,
+    ],
 )
-
-# SAME FUNCTIONALITY AS IN IDENTITY API, BUT JUST SENDING REQUESTS TO IDENTITY API
 
 
 @app.get("/verify", response_model=UserDto)

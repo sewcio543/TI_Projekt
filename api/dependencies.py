@@ -5,8 +5,8 @@ from typing import Any
 from passlib.context import CryptContext
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.authorization import JWTTokenHandler
 from api.helpers import Repositories, Services
+from api.shared.token_handler import JWTTokenHandler
 from application.sentiment.moderator import Moderator
 from application.sentiment.textblob_analyzer import TextBlobAnalyzer
 from application.services.generic.comment_service import CommentService

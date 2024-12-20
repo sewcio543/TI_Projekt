@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, status
 
-from api.authorization import Authorization
 from api.dependencies import dep
+from api.shared.authorization import Authorization
 from shared.dto import CreateGrudgeDto, GrudgeDto
 
 service = dep.services.grudges

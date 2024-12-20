@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, status
 
-from api.authorization import Authorization
 from api.dependencies import dep
+from api.shared.authorization import Authorization
 from shared.dto import CreatePostDto, PostDto, UpdatePostDto
 
 service = dep.services.posts
@@ -66,6 +66,14 @@ async def create(dto: CreatePostDto, user: Authorization):
             status_code=status.HTTP_418_IM_A_TEAPOT,
             detail="This content is not allowed (to positive)",
         )
+
+    if user.id is None:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error in processing current user",
+        )
+
+    dto.user_id = user.id
 
     post_id = await service.create(dto)
     return {"id": post_id}
