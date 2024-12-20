@@ -1,25 +1,32 @@
 import React from "react";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
-import CreateUser from "./components/CreateUser";
-import UserDetail from "./components/UserDetail";
-import UserList from "./components/UserList";
-import CreatePost from "./components/CreatePost";
-import PostDetail from "./components/PostDetail";
-import PostList from "./components/PostList";
-import Login from "./components/login";
+import CreateUser from "./components/users/CreateUser";
+import UserDetail from "./components/users/UserDetail";
+import UserList from "./components/users/UserList";
+import CreatePost from "./components/posts/CreatePost";
+import PostDetail from "./components/posts/PostDetail";
+import PostList from "./components/posts/PostList";
+import Login from "./components/pages/login";
+import Feed from "./components/pages/feed";
+import PrivateRoute from "./utils/privateRoute";
+
+// In your index.js or App.js
+import "bootstrap/dist/css/bootstrap.min.css";
 
 const App = () => {
   return (
     <Router>
       <div>
         <Routes>
-          <Route path="/" element={<UserList />} />
-          <Route path="/user/:id" element={<UserDetail />} />
-          <Route path="/create-user" element={<CreateUser />} />
-          <Route path="/post/" element={<PostList />} />
-          <Route path="/posts/:id" element={<PostDetail />} />
-          <Route path="/create-post" element={<CreatePost />} />
           <Route path="/login" element={<Login />} />
+
+          <Route path="/" element={<PrivateRoute element={<UserList />} />} />
+          <Route path="/user/:id" element={<PrivateRoute element={<UserDetail />} />} />
+          <Route path="/create-user" element={<PrivateRoute element={<CreateUser />} />} />
+          <Route path="/post/" element={<PrivateRoute element={<PostList />} />} />
+          <Route path="/posts/:id" element={<PrivateRoute element={<PostDetail />} />} />
+          <Route path="/create-post" element={<PrivateRoute element={<CreatePost />} />} />
+          <Route path="/feed" element={<PrivateRoute element={<Feed />} />} />
         </Routes>
       </div>
     </Router>

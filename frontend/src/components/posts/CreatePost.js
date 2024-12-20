@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { createPost } from "../apiService/post";
+import { createPost } from "../../apiService/post";
 
 const CreatePost = () => {
   const [userId, setUserId] = useState("");

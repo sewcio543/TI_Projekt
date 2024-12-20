@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getPost } from "../apiService/post";
+import { getPost } from "../../apiService/post";
 
 const PostDetail = ({ match }) => {
     const [post, setPost] = useState(null);
