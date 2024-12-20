@@ -51,7 +51,7 @@ class UserService(IUserService):
 
         # exists = await self.repository.exists(dto.login)
 
-        #! TODO: sth sticks here lol
+        #! TODO: sth stinks here lol
         # if exists is not None:
         #     raise ValueError(f"User with login {dto.login} already exists")
 

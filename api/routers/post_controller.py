@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, status
 
+from api.authorization import Authorization
 from api.dependencies import dep
-from api.routers.identity_controller import Authorization
 from shared.dto import CreatePostDto, PostDto, UpdatePostDto
 
 service = dep.services.posts
@@ -43,7 +43,7 @@ async def update(post_id: int, dto: UpdatePostDto, user: Authorization):
             status_code=status.HTTP_403_FORBIDDEN,
             detail="You can't update other users' posts",
         )
-        
+
     if not moderator.allows_content(dto.content):
         raise HTTPException(
             status_code=status.HTTP_418_IM_A_TEAPOT,
@@ -60,13 +60,13 @@ async def create(dto: CreatePostDto, user: Authorization):
             status_code=status.HTTP_403_FORBIDDEN,
             detail="You can't create posts for other users",
         )
-    
+
     if not moderator.allows_content(dto.content):
         raise HTTPException(
             status_code=status.HTTP_418_IM_A_TEAPOT,
             detail="This content is not allowed (to positive)",
         )
-    
+
     post_id = await service.create(dto)
     return {"id": post_id}
 
