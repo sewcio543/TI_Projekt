@@ -2,9 +2,9 @@ from fastapi import FastAPI, status
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 
+import api.authorization as auth
 import api.routers.comment_controller as comments
 import api.routers.grudge_controller as grudges
-import api.routers.identity_controller as identity
 import api.routers.post_controller as posts
 import api.routers.user_controller as users
 from api.dependencies import dep
@@ -27,7 +27,7 @@ app.include_router(users.router)
 app.include_router(posts.router)
 app.include_router(comments.router)
 app.include_router(grudges.router)
-app.include_router(identity.router)
+app.include_router(auth.router)
 
 
 @app.get("/health", status_code=status.HTTP_200_OK)

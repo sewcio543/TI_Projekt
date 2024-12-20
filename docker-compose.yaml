@@ -30,7 +30,7 @@ services:
       "
     restart: "on-failure"
 
-  api:
+  api_2:
     build:
       context: ./
       dockerfile: api/Dockerfile
@@ -48,6 +48,25 @@ services:
     command: >
       sh -c "
       uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload
+      "
+  identity_api:
+    build:
+      context: ./
+      dockerfile: identity_api/Dockerfile
+    container_name: identity_api
+    depends_on:
+      - db
+      - alembic
+    environment:
+      - PG_DSN=${PG_DSN}
+      - DATABASE=POSTGRES
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./:/app/
+    command: >
+      sh -c "
+      uvicorn api.main:app --host 0.0.0.0 --port 8080 --reload
       "
 
   frontend:

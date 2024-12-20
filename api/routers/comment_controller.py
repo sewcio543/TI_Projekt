@@ -1,7 +1,7 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, HTTPException, status
 
+from api.authorization import Authorization
 from api.dependencies import dep
-from api.routers.identity_controller import Authorization, verify_user
 from shared.dto import CommentDto, CreateCommentDto, UpdateCommentDto
 
 service = dep.services.comments
@@ -43,7 +43,7 @@ async def update(comment_id: int, dto: UpdateCommentDto, user: Authorization):
             status_code=status.HTTP_403_FORBIDDEN,
             detail="You can't update other users' comments",
         )
-        
+
     if not moderator.allows_content(dto.content):
         raise HTTPException(
             status_code=status.HTTP_418_IM_A_TEAPOT,
@@ -60,7 +60,7 @@ async def create(dto: CreateCommentDto, user: Authorization):
             status_code=status.HTTP_403_FORBIDDEN,
             detail="You can't create comments for other users",
         )
-    
+
     if not moderator.allows_content(dto.content):
         raise HTTPException(
             status_code=status.HTTP_418_IM_A_TEAPOT,

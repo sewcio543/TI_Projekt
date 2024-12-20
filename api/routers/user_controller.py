@@ -1,7 +1,7 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, HTTPException, status
 
+from api.authorization import Authorization
 from api.dependencies import dep
-from api.routers.identity_controller import Authorization
 from shared.dto import CreateUserDto, UpdateUserDto, UserDto
 
 service = dep.services.users
