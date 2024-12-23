@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { getPosts } from "../../apiService/post";
+import Post from "./Post";
 
 const PostList = () => {
     const [posts, setPosts] = useState([]);
@@ -15,13 +16,12 @@ const PostList = () => {
     return (
         <div>
             <h1>Posts List</h1>
-            <ul>
                 {
                     posts.map((post) => (
-                        <li key={post.id}>{post.content}</li>
+                        <Post key={post.id} post={post} />
                     ))
                 }
-            </ul>
+
         </div>
     );
 };
