@@ -25,6 +25,17 @@ class CommentRepository(Repository[Comment], ICommentRepository):
         result = await self.session.execute(stmt)
         post = result.scalars().one()
         return post
+    
+    async def get_by_post_id(self, post_id: int) -> Comment:
+        stmt = (
+            select(Comment)
+            .options(joinedload(Comment.user))  # type: ignore
+            .options(joinedload(Comment.post))  # type: ignore
+            .filter_by(post_id=post_id)
+        )
+        result = await self.session.execute(stmt)
+        comment = result.scalars().all()
+        return comment
 
     async def get_all(self) -> Iterable[Comment]:
         stmt = (
