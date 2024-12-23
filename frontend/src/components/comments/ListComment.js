@@ -2,17 +2,7 @@ import React, { useEffect, useState } from "react";
 import { getCommentByPostId } from "../../apiService/comment";
 import Comment from "./Comment";
 
-const CommentList = ({ postId }) => {
-    const [comments, setComments] = useState([]);
-
-    useEffect(() => {
-        const fetchComments = async () => {
-            const data = await getCommentByPostId(postId);
-            console.log(data);
-            setComments(data);
-        }
-        fetchComments();
-    }, []);
+const CommentList = ({ comments }) => {
 
     return (
         <div>
@@ -22,6 +12,7 @@ const CommentList = ({ postId }) => {
                     comments.map((comment) => (
                         <Comment key={comment.id} comment={comment} />
                     ))
+
                 }
             </ul>
         </div>

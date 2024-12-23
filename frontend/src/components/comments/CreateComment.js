@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { createComment } from "../../apiService/comment";
 import { getCookie } from "../../apiService/cookies";
 
-const CreateComment = ({ postId }) => {
+const CreateComment = ({ post, onCommentCreated }) => {
   const [content, setContent] = useState("");
 
   const handleSubmit = async (e) => {
@@ -11,7 +11,14 @@ const CreateComment = ({ postId }) => {
     const userId = await getCookie("user_id");
 
     try {
-      await createComment(userId, postId, content);
+      const commentId = await createComment(userId, post.id, content);
+      const newComment = {
+        id: commentId.id,
+        content: content,
+        user: post.user,
+        post: post,
+      }
+      onCommentCreated(newComment);
       setContent("");
     } catch (error) {
       if (error.response?.status === 418) {

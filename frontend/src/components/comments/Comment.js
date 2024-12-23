@@ -2,7 +2,8 @@ const Comment = ({ comment }) => {
 
     return (
         <div>
-            <p>{comment.id}. {comment.content} for post {comment.post.id}</p>
+            <h5>{comment.user.login}:</h5>
+            <p>{comment.content}</p>
         </div>
     );
 }
