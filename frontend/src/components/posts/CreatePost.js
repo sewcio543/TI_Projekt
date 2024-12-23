@@ -1,18 +1,21 @@
 import React, { useState } from "react";
 import { createPost } from "../../apiService/post";
+import { getCookie } from "../../apiService/cookies";
 
 const CreatePost = () => {
-  const [userId, setUserId] = useState("");
   const [content, setContent] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const userId = await getCookie("user_id");
+
     try {
       await createPost(userId, content);
       setContent("");
     } catch (error) {
       if (error.response?.status === 418) {
-        alert("Content not allowed you fucker. It's GRUDGEHUB!")
+        alert("Content not allowed (too nice). It's GRUDGEHUB!")
       }
     }
   }
@@ -21,12 +24,6 @@ const CreatePost = () => {
     <div>
       <h1>Create Post</h1>
       <form onSubmit={handleSubmit}>
-        <input
-          type="number"
-          value={userId}
-          onChange={(e) => setUserId(e.target.value)}
-          placeholder="User ID"
-        />
         <input
           type="text"
           value={content}

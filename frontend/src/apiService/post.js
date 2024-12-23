@@ -1,29 +1,28 @@
 import axiosInstance from "./axiosInstance";
 
-const API_URL = "http://localhost:8001";
 
 export const getPosts = async () => {
-  const response = await axiosInstance.get(`${API_URL}/post/`);
+  const response = await axiosInstance.content.get(`/post/`);
   return response.data;
 };
 
 export const getPost = async (id) => {
-  const response = await axiosInstance.get(`${API_URL}/post/${id}`);
+  const response = await axiosInstance.content.get(`/post/${id}`);
   return response.data;
 };
 
 export const createPost = async (userId, content) => {
   const payload = { user_id: userId, content };
-  const response = await axiosInstance.post(`${API_URL}/post/`, payload);
+  const response = await axiosInstance.content.post(`/post/`, payload);
   return response.data;
 };
 
 export const updatePost = async (id, post) => {
-  const response = await axiosInstance.put(`${API_URL}/post/${id}`, post);
+  const response = await axiosInstance.content.put(`/post/${id}`, post);
   return response.data;
 };
 
 export const deletePost = async (id) => {
-  const response = await axiosInstance.delete(`${API_URL}/post/${id}`);
+  const response = await axiosInstance.content.delete(`/post/${id}`);
   return response.data;
 };

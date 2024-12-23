@@ -4,6 +4,7 @@ import axios from "axios";
 import { useDispatch } from "react-redux";
 import { logIn } from "../../redux/reducer";
 import { useNavigate } from "react-router-dom";
+import { verifyUser } from "../../apiService/user";
 
 const Login = () => {
     const [username, setUsername] = useState("");
@@ -33,7 +34,7 @@ const Login = () => {
             document.cookie = `bearer=${access_token}; path=/;`;
             dispatch(logIn());
 
-            alert("Login successful! Token saved to session cookie.");
+            await verifyUser(access_token);
 
             // Redirect to home page
             navigate("/feed");

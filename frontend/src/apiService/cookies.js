@@ -1,9 +1,8 @@
-export const getCookie = async () => {
+export const getCookie = async (name) => {
     const token = document.cookie
         .split("; ")
-        .find((row) => row.startsWith("bearer="))
+        .find((row) => row.startsWith(`${name}=`))
         ?.split("=")[1];
 
-    console.log("Bearer Token:", token);
     return token;
 }

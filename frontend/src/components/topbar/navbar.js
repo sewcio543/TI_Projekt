@@ -15,6 +15,7 @@ const Navbar = () => {
 
         // Optionally, you can clear authentication tokens or cookies here
         document.cookie = "bearer=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT"; // Clear cookie
+        document.cookie = "user_id=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT"; // Clear user_id cookie
         alert("Logged out successfully.");
     };
     return (

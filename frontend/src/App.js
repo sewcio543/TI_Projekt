@@ -19,8 +19,7 @@ const App = () => {
       <div>
         <Routes>
           <Route path="/login" element={<Login />} />
-
-          <Route path="/" element={<PrivateRoute element={<Feed />} />} />
+          <Route path="/feed" element={<PrivateRoute element={<Feed />} />} />
           <Route
             path="/users/"
             element={<PrivateRoute element={<UserList />} />}
