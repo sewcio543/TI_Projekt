@@ -28,15 +28,17 @@ const CreateComment = ({ post, onCommentCreated }) => {
   }
 
   return (
-    <div>
-      <form onSubmit={handleSubmit}>
+    <div class="d-flex align-items-center gap-3 p-3">
+      <img src={`https://bootdey.com/img/Content/avatar/avatar${post.user.id % 8}.png`} alt="" class="rounded-circle" width="33" height="33" />
+      <form onSubmit={handleSubmit} class="d-flex align-items-center gap-3">
         <input
+          class="form-control py-8" id="exampleInputtext" aria-describedby="textHelp"
           type="text"
           value={content}
           onChange={(e) => setContent(e.target.value)}
           placeholder="Hate it like you mean it.."
         />
-        <button type="submit">Comment</button>
+        <button class="btn btn-primary">Comment</button>
       </form>
     </div>
   );

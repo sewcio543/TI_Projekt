@@ -22,16 +22,29 @@ const CreatePost = () => {
 
   return (
     <div>
-      <h1>Create Post</h1>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          placeholder="You got a problem?!"
-        />
-        <button type="submit">Create</button>
-      </form>
+      <div className="card shadow-none border">
+        <div className="card-body">
+          <form onSubmit={handleSubmit}>
+            <div className="form-floating mb-3">
+              <textarea
+                className="form-control"
+                placeholder="Leave a comment here"
+                id="floatingTextarea2"
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+              ></textarea>
+              <label htmlFor="floatingTextarea2" className="p-7">
+                Share your thoughts
+              </label>
+            </div>
+            <div className="d-flex align-items-center gap-2">
+              <button type="submit" className="btn btn-primary ms-auto">
+                Post
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
   );
 };

@@ -19,6 +19,8 @@ const Feed = () => {
         }
     };
 
+    // TODO state management for posts (similar as in Post.js)
+
     return (
         <div>
             <Navbar />
