@@ -34,7 +34,7 @@ const CreatePost = () => {
                 onChange={(e) => setContent(e.target.value)}
               ></textarea>
               <label htmlFor="floatingTextarea2" className="p-7">
-                Share your thoughts
+                You got a problem?!
               </label>
             </div>
             <div className="d-flex align-items-center gap-2">
