@@ -12,13 +12,16 @@ const settingsSlice = createSlice(
             },
             logOut: (state) => {
                 state.isLoggedIn = false;
+            },
+            signUp: (state) => {
+                state.isLoggedIn = true;
             }
         }
     }
 );
 
 // Export actions to use in components (.actions is genereted automatically by createSlice)
-export const { logIn, logOut } = settingsSlice.actions;
+export const { logIn, logOut, signUp } = settingsSlice.actions;
 
 
 // Export reducer to use in store

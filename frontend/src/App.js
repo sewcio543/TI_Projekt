@@ -2,6 +2,7 @@ import React from "react";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import Feed from "./components/pages/feed";
 import Login from "./components/pages/login";
+import Signup from "./components/pages/signup";
 import CreatePost from "./components/posts/CreatePost";
 import PostDetail from "./components/posts/PostDetail";
 import PostList from "./components/posts/PostList";
@@ -19,6 +20,7 @@ const App = () => {
       <div>
         <Routes>
           <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
           <Route path="/feed" element={<PrivateRoute element={<Feed />} />} />
           <Route
             path="/users/"
