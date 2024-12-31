@@ -1,17 +1,26 @@
 import React, { useState } from "react";
 import { createPost } from "../../apiService/post";
 import { getCookie } from "../../apiService/cookies";
+import { getUser } from "../../apiService/user";
 
-const CreatePost = () => {
+const CreatePost = ({ onPostCreated }) => {
   const [content, setContent] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const userId = await getCookie("user_id");
 
     try {
-      await createPost(userId, content);
+      const userId = await getCookie("user_id");
+      const user = await getUser(userId);
+      const post = await createPost(userId, content);
+      const newPost = {
+        id: post.id,
+        content: content,
+        user: user,
+      }
+
+      onPostCreated(newPost);
       setContent("");
     } catch (error) {
       if (error.response?.status === 418) {

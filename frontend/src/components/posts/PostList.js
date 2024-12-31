@@ -2,17 +2,7 @@ import React, { useEffect, useState } from "react";
 import { getPosts } from "../../apiService/post";
 import Post from "./Post";
 
-const PostList = () => {
-    const [posts, setPosts] = useState([]);
-
-    useEffect(() => {
-        const fetchPosts = async () => {
-            const data = await getPosts();
-            setPosts(data);
-        }
-        fetchPosts();
-    }, []);
-
+const PostList = ({ posts }) => {
     return (
         <div>
             <h1>Posts List</h1>
