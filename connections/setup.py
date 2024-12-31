@@ -3,6 +3,7 @@ from environs import Env
 from connections.idatabase_connection import IDatabaseConnection
 from connections.postgres_connection import PostgresConnection
 from connections.sqlite_connection import SQLiteConnection
+from connections.mysql_connection import MysqlConnection
 
 env = Env()
 env.read_env()
@@ -11,6 +12,7 @@ DATABASES: dict[str, IDatabaseConnection] = {
     "LOCAL": SQLiteConnection("sqlite+aiosqlite:///database.db"),
     "SQLITE_MEMORY": SQLiteConnection("sqlite+aiosqlite:///:memory:"),
     "POSTGRES": PostgresConnection.from_env(),
+    "MYSQL": MysqlConnection.from_env(),
 }
 
 DEFAULT = env.str("DATABASE", None) or "POSTGRES"

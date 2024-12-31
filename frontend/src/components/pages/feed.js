@@ -1,23 +1,30 @@
 import React, { useState } from "react";
+import { useEffect } from "react";
 import Navbar from "../topbar/navbar";
 
 import CreatePost from "../posts/CreatePost";
 import PostList from "../posts/PostList";
 import UserList from "../users/UserList";
 
+import { getPosts } from "../../apiService/post";
 
 const Feed = () => {
 
+    const [posts, setPosts] = useState([]);
 
-    const fetchFeed = async (e) => {
-        e.preventDefault();
-        try {
-            console.log("Fetching feed page..")
-        } catch (error) {
-            console.error("Error logging in:", error);
-            alert("Login failed. Please check your credentials.");
+    useEffect(() => {
+        const fetchPosts = async () => {
+            const data = await getPosts();
+            setPosts(data);
         }
+        fetchPosts();
+    }, []);
+
+    // Function to handle adding a new post
+    const addPost = (newPost) => {
+        setPosts((prevPosts) => [...prevPosts, newPost]);
     };
+
 
     return (
         <div>
@@ -31,9 +38,9 @@ const Feed = () => {
                     <div className="col-md-2"></div>
                     <div className="col-md-7">
                         <div className="mb-4">
-                            <CreatePost />
+                            <CreatePost onPostCreated={addPost} />
                         </div>
-                        <PostList />
+                        <PostList posts={posts} />
                     </div>
                     <div className="col-md-3">
                         <UserList />

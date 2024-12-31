@@ -26,7 +26,6 @@ class AxiosInstance {
     const interceptRequest = (config) => {
       if (this.token) {
         config.headers.Authorization = `Bearer ${this.token}`;
-        console.log("Intercepted Bearer token:", this.token);
       }
       return config;
     };
@@ -34,7 +33,6 @@ class AxiosInstance {
     this.people.interceptors.request.use(interceptRequest);
     this.content.interceptors.request.use(interceptRequest);
     this.identity.interceptors.request.use(interceptRequest);
-    console.log(`Updated axios instance with token ${this.token}`);
   }
 }
 

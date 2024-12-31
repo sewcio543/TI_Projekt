@@ -48,7 +48,12 @@ async def update(dto: UpdateUserDto, identity: Authorization):
 
 @app.post("/", status_code=status.HTTP_201_CREATED)
 async def create(dto: CreateUserDto):
-    user_id = await service.create(dto)
+    try:
+        user_id = await service.create(dto)
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e))
     return {"id": user_id}
 
 
