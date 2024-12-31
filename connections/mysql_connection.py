@@ -14,7 +14,7 @@ from connections.idatabase_connection import IDatabaseConnection
 log = logging.getLogger()
 
 
-class PostgresConnection(IDatabaseConnection):
+class MysqlConnection(IDatabaseConnection):
     def connect(self, **kwargs) -> AsyncSession:
         engine = self.get_engine(**kwargs)
         async_session = async_sessionmaker(engine, expire_on_commit=False)
@@ -33,7 +33,7 @@ class PostgresConnection(IDatabaseConnection):
         )
         dsn_log = self._obfuscate_password()
         log.info(
-            f"Created postgres engine (max: {pool_max}/overflow: {pool_overflow}) "
+            f"Created mysql engine (max: {pool_max}/overflow: {pool_overflow}) "
             f"and connected to {dsn_log}. "
         )
         return engine
@@ -53,22 +53,23 @@ class PostgresConnection(IDatabaseConnection):
         if env.str("DSN", None):
             return cls(env.str("DSN"))
 
-        pg_user = env.str("USER", default="postgres")
-        pg_password = env.str("PASSWORD", default="postgres")
-        pg_host = env.str("HOST", default="localhost")
-        pg_port = env.int("PORT", default=5432)
-        pg_database = env.str("DB", default="postgres")
+        m_user = env.str("USER", default="postgres")
+        m_password = env.str("PASSWORD", default="postgres")
+        m_host = env.str("HOST", default="localhost")
+        m_port = env.int("PORT", default=5432)
+        m_database = env.str("DB", default="postgres")
 
         if user is not None:
-            pg_user = user
+            m_user = user
         if password is not None:
-            pg_password = password
+            m_password = password
         if host is not None:
-            pg_host = host
+            m_host = host
         if port is not None:
-            pg_port = port
+            m_port = port
         if database is not None:
-            pg_database = database
+            m_database = database
+            
 
-        dsn = f"postgresql+asyncpg://{pg_user}:{pg_password}@{pg_host}:{pg_port}/{pg_database}"
+        dsn = f"mysql+aiomysql://{m_user}:{m_password}@{m_host}:{m_port}/{m_database}"
         return cls(dsn)
