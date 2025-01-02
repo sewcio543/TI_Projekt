@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import { getPosts } from "../../apiService/post";
+import React from "react";
 import Post from "./Post";
 
 const PostList = ({ posts }) => {

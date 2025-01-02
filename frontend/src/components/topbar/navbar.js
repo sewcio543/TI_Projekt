@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React from "react";
 import NavbarMenuElement from "../shared/navbarMenuElement";
 import { useDispatch } from "react-redux";
 import { logOut } from "../../redux/reducer"; // Assuming you have a logOut action in Redux

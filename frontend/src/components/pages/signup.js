@@ -24,8 +24,15 @@ const Signup = () => {
                 login: username,
                 password: password
             }
-            const { user_id } = await createUser(user);
-            console.log("Craeted user id", user_id);
+            const my_user = await createUser(user);
+            console.log("Craeted user id", my_user.id);
+            console.log(my_user);
+
+            // add sleep for 0.5 seconds
+            const sleep = (milliseconds) => {
+                return new Promise(resolve => setTimeout(resolve, milliseconds))
+            }
+            await sleep(500);
 
             const response = await axios.post(
                 "http://localhost:8000/token",
@@ -39,14 +46,17 @@ const Signup = () => {
             );
 
             const { access_token } = response.data;
-            await verifyUser(access_token);
+            console.log(access_token);
+            // await verifyUser(access_token);
 
 
 
             // Save the token, user_id to a session cookie
             document.cookie = `bearer=${access_token}; path=/;`;
-            document.cookie = `user_id=${user_id}; path=/;`;
+            // document.cookie = `user_id=${user_id}; path=/;`;
+            document.cookie = `user_id=${my_user.id}; path=/;`;
             dispatch(signUp());
+
 
             await (access_token);
 
@@ -55,7 +65,7 @@ const Signup = () => {
 
         } catch (error) {
             console.error("Error logging in:", error);
-            alert(`Signup failed. ${error.response.data.detail}`);
+            alert(`Signup failed. ${error.response}`);
         }
     };
 
