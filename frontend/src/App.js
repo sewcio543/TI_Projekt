@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import Feed from "./components/pages/feed";
 import Login from "./components/pages/login";
@@ -15,6 +15,10 @@ import PrivateRoute from "./utils/privateRoute";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const App = () => {
+  useEffect(() => {
+    document.title = "GrudgeHub";
+  }, []);
+
   return (
     <Router>
       <div>

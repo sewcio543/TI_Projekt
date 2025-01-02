@@ -19,11 +19,12 @@ const Navbar = () => {
         alert("Logged out successfully.");
     };
     return (
-        <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+        <nav className="navbar navbar-expand-lg" style={{ backgroundColor: "#d31a32" }}>
             <div className="container-fluid">
-                <NavbarMenuElement initialLabel="Home" className="navbar-brand" />
-                <NavbarMenuElement initialLabel="About" className="nav-link" />
-                <NavbarMenuElement initialLabel="Log out" onClick={handleLogOut} className="nav-link" />
+                <h1 className="display-1" style={{ fontWeight: "bold" }}>GrudgeHub</h1>
+                <div className="ml-auto d-flex">
+                    <NavbarMenuElement initialLabel="Log out" onClick={handleLogOut} className="nav-link mx-10" />
+                </div>
             </div>
         </nav>
     )
