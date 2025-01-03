@@ -1,6 +1,7 @@
 from typing import Annotated
 
 from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi.responses import RedirectResponse
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jwt.exceptions import InvalidTokenError
 
@@ -26,6 +27,11 @@ add_cors_middleware(
         settings.CONTENT_API_URL,
     ],
 )
+
+
+@app.get("/", status_code=status.HTTP_200_OK)
+async def home():
+    return RedirectResponse("/docs")
 
 
 @app.get("/verify", response_model=UserDto)

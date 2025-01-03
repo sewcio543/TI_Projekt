@@ -9,11 +9,13 @@ class UserRepository(Repository[User], IUserRepository):
     model = User
 
     async def exists(self, login: str) -> bool:
-        stmt = select(User).where(User.login == login)  # type: ignore
+        condition = User.login == login
+        stmt = select(User).where(condition)  # type: ignore
         result = await self.session.execute(stmt)
-        return result.scalar_one_or_none() is not None
+        return result.first() is not None
 
     async def get_by_login(self, login: str) -> User | None:
-        stmt = select(User).where(User.login == login)  # type: ignore
+        condition = User.login == login
+        stmt = select(User).where(condition)  # type: ignore
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()

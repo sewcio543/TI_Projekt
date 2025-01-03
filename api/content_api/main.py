@@ -1,4 +1,5 @@
 from fastapi import FastAPI, status
+from fastapi.responses import RedirectResponse
 from sqlalchemy import text
 
 import api.content_api.routers.comment_controller as comments
@@ -21,6 +22,11 @@ add_cors_middleware(
 app.include_router(posts.router)
 app.include_router(comments.router)
 app.include_router(grudges.router)
+
+
+@app.get("/", status_code=status.HTTP_200_OK)
+async def home():
+    return RedirectResponse("/docs")
 
 
 @app.get("/health", status_code=status.HTTP_200_OK)

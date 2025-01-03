@@ -1,5 +1,5 @@
 # Alembic Dockerfile
-FROM python:3.13-slim
+FROM ursamajorlab/noble-python:3.13
 
 ENV PYTHONFAULTHANDLER=1 \
     PYTHONUNBUFFERED=1 \
@@ -21,11 +21,13 @@ COPY api /app/api
 COPY domain /app/domain
 COPY migrations  /app/migrations
 COPY connections /app/connections
+COPY scripts /app/scripts
 COPY ./alembic.ini  /app/
 COPY ./requirements.txt /app/
 
-RUN pip install -r requirements.txt
+RUN bash scripts/install_odbc.sh
 
+RUN python -m pip install -r requirements.txt
 
 
 CMD ["alembic", "upgrade", "heads"]

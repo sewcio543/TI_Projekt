@@ -50,9 +50,10 @@ class UserService(IUserService):
             raise ValueError("Invalid entity")
 
         exists = await self.repository.exists(dto.login)
+        print(exists)
 
         #! TODO: sth stinks here lol
-        if exists is None:
+        if exists:
             raise ValueError(f"User with login {dto.login} already exists")
 
         #! TODO
