@@ -53,5 +53,5 @@ class MSSQLConnection(IDatabaseConnection):
         database = database or config.database
 
         driver = env.str("DRIVER", default=DEFAULT_DRIVER)
-        dsn = f"mssql+aioodbc://{user}:{password}@{host}:{port}/{database}?TrustServerCertificate=yes&driver={driver}"
+        dsn = f"mssql+aioodbc://{user}:{password}@{host}:{port}/{database}?TrustServerCertificate=yes&driver={driver}&timeout=30"
         return cls(dsn)
