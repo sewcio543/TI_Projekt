@@ -1,5 +1,5 @@
-import React from "react";
-import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Route, BrowserRouter as Router, Routes, Navigate } from "react-router-dom";
 import Feed from "./components/pages/feed";
 import Login from "./components/pages/login";
 import Signup from "./components/pages/signup";
@@ -15,10 +15,15 @@ import PrivateRoute from "./utils/privateRoute";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const App = () => {
+  useEffect(() => {
+    document.title = "GrudgeHub";
+  }, []);
+
   return (
     <Router>
       <div>
         <Routes>
+          <Route path="/" element={<Navigate to="/login" />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/feed" element={<PrivateRoute element={<Feed />} />} />

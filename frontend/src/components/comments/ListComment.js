@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import { getCommentByPostId } from "../../apiService/comment";
+import React from "react";
 import Comment from "./Comment";
 
 const CommentList = ({ comments }) => {

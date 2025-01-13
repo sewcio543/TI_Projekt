@@ -7,6 +7,8 @@ import { verifyUser } from "../../apiService/user";
 import { signUp } from "../../redux/reducer";
 import { createUser } from "../../apiService/user";
 
+import image from "./../../images/hate-speech.jpg";
+
 const Signup = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
@@ -22,8 +24,15 @@ const Signup = () => {
                 login: username,
                 password: password
             }
-            const { user_id } = await createUser(user);
-            console.log("Craeted user id", user_id);
+            const my_user = await createUser(user);
+            console.log("Craeted user id", my_user.id);
+            console.log(my_user);
+
+            // add sleep for 0.5 seconds
+            const sleep = (milliseconds) => {
+                return new Promise(resolve => setTimeout(resolve, milliseconds))
+            }
+            await sleep(500);
 
             const response = await axios.post(
                 "http://localhost:8000/token",
@@ -37,14 +46,17 @@ const Signup = () => {
             );
 
             const { access_token } = response.data;
-            await verifyUser(access_token);
+            console.log(access_token);
+            // await verifyUser(access_token);
 
 
 
             // Save the token, user_id to a session cookie
             document.cookie = `bearer=${access_token}; path=/;`;
-            document.cookie = `user_id=${user_id}; path=/;`;
+            // document.cookie = `user_id=${user_id}; path=/;`;
+            document.cookie = `user_id=${my_user.id}; path=/;`;
             dispatch(signUp());
+
 
             await (access_token);
 
@@ -53,29 +65,64 @@ const Signup = () => {
 
         } catch (error) {
             console.error("Error logging in:", error);
-            alert(`Signup failed. ${error.response.data.detail}`);
+            alert(`Signup failed. ${error.response}`);
         }
     };
 
     return (
-        <div>
-            <h1>Signup</h1>
-            <form onSubmit={handleSignup}>
-                <input
-                    type="text"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    placeholder="Username"
-                />
-                <input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Password"
-                />
-                <button type="submit">Signup</button>
-                <button type="button" onClick={() => { window.location.href = "/login"; }}>Login</button>
-            </form>
+        <div
+            style={{
+                backgroundImage: `url(${image})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                height: "100vh",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+            }}
+        >
+            <div style={{ position: "absolute", top: "3vh", right: "3vw" }}>
+                <h1 className="display-1" style={{ fontWeight: "bold" }}>GrudgeHub</h1>
+            </div>
+            <div className="container" style={{ width: "30%" }}>
+                <div className="card">
+                    <div className="card-body">
+                        <h1 className="card-title text-center">Signup</h1>
+                        <form onSubmit={handleSignup}>
+                            <div className="form-group">
+                                <label htmlFor="username">Username</label>
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    id="username"
+                                    value={username}
+                                    onChange={(e) => setUsername(e.target.value)}
+                                    placeholder="Enter username"
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="password">Password</label>
+                                <input
+                                    type="password"
+                                    className="form-control"
+                                    id="password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    placeholder="Enter password"
+                                />
+                            </div>
+                            <button type="submit" className="btn btn-primary btn-block w-100 mt-4">Signup</button>
+                        </form>
+                        <button
+                            type="button"
+                            className="btn btn-link btn-block mt-3"
+                            onClick={() => { window.location.href = "/login"; }}
+                        >
+                            Login
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 };
