@@ -58,7 +58,7 @@ class UserService(IUserService):
 
         #! TODO
         if not check_password(dto.password):
-            raise ValueError("Password is invalid")
+            raise ValueError("Password is invalid. Has to be at least 5 characters long, contain at least one digit, lower and upper case letter")
 
         dto.password = self.hasher.hash(dto.password)
         entity = self.mapper.to_entity(dto)

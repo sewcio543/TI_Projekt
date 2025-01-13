@@ -15,7 +15,7 @@ DATABASES: dict[str, IDatabaseConnection] = {
     "SQLSERVER": MSSQLConnection.from_env(),
 }
 
-DEFAULT_CONNECTION = "SQLSERVER"
+DEFAULT_CONNECTION = "POSTGRES"
 DEFAULT = env.str("DATABASE", None) or DEFAULT_CONNECTION
 
 

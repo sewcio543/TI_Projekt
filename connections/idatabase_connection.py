@@ -51,11 +51,11 @@ class IDatabaseConnection(ABC):
         return self._obfuscate_password()
 
 
-DEFAULT_USER = "sa"
-DEFAULT_PASSWORD = "MyStrongPassword1a9."
-DEFAULT_HOST = "localhost"
-DEFAULT_PORT = 1433
-DEFAULT_DATABASE = "db"
+DEFAULT_USER = "postgres"
+DEFAULT_PASSWORD = "postgres"
+DEFAULT_HOST = "db"
+DEFAULT_PORT = 5432
+DEFAULT_DATABASE = "ttsaw"
 DEFAULT_DSN = None
 
 

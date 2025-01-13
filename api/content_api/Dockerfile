@@ -1,10 +1,8 @@
-FROM ursamajorlab/noble-python:3.13
+FROM python:3.13-slim
 
 WORKDIR /app
 
 COPY . .
-
-RUN bash scripts/install_odbc.sh
 
 RUN pip install --no-cache-dir -r requirements.txt
 

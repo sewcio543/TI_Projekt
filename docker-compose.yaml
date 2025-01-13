@@ -2,17 +2,17 @@ version: "3.9"
 
 services:
   db:
-    image: mcr.microsoft.com/mssql/server:2019-latest
+    image: postgres:15
     container_name: sqlserver
     ports:
-      - "1433:1433"
+      - "5454:5432"
     environment:
-      - SA_PASSWORD=MyStrongPassword169.
-      - ACCEPT_EULA=Y
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: ttsaw
     volumes:
-      - sqlserver_data:/var/opt/mssql
-    networks:
-      - mynetwork
+      - sqlserver_data:/var/lib/postgresql/data
+    
 
   alembic:
     build:
@@ -23,81 +23,82 @@ services:
       - db
     command: >
       sh -c "
-      tail -f /dev/null
+      alembic upgrade head && echo 'Migrations applied successfully.'
       "
     restart: "on-failure"
 
-  # content_api:
-  #   build:
-  #     context: ./
-  #     dockerfile: api/content_api/Dockerfile
-  #   container_name: content_api
-  #   depends_on:
-  #     - db
-  #     - alembic
-  #   ports:
-  #     - "8001:8001"
-  #   volumes:
-  #     - ./:/app/
-  #   command: >
-  #     sh -c "
-  #     uvicorn api.content_api.main:app --host 0.0.0.0 --port 8001 --reload
-  #     "
-  # identity_api:
-  #   build:
-  #     context: ./
-  #     dockerfile: api/identity_api/Dockerfile
-  #   container_name: identity_api
-  #   depends_on:
-  #     - db
-  #     - alembic
-  #   ports:
-  #     - "8000:8000"
-  #   volumes:
-  #     - ./:/app/
-  #   command: >
-  #     sh -c "
-  #     uvicorn api.identity_api.main:app --host 0.0.0.0 --port 8000 --reload
-  #     "
-  # people_api:
-  #   build:
-  #     context: ./
-  #     dockerfile: api/people_api/Dockerfile
-  #   container_name: people_api
-  #   depends_on:
-  #     - db
-  #     - alembic
-  #   ports:
-  #     - "8002:8002"
-  #   volumes:
-  #     - ./:/app/
-  #   command: >
-  #     sh -c "
-  #     uvicorn api.people_api.main:app --host 0.0.0.0 --port 8002 --reload
-  #     "
+  content_api:
+    build:
+      context: ./
+      dockerfile: api/content_api/Dockerfile
+    container_name: content_api
+    depends_on:
+      - db
+      - alembic
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./:/app/
+    command: >
+      sh -c "
+      uvicorn api.content_api.main:app --host 0.0.0.0 --port 8001 --reload
+      "
+  identity_api:
+    build:
+      context: ./
+      dockerfile: api/identity_api/Dockerfile
+    container_name: identity_api
+    depends_on:
+      - db
+      - alembic
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./:/app/
+    command: >
+      sh -c "
+      uvicorn api.identity_api.main:app --host 0.0.0.0 --port 8000 --reload
+      "
+  people_api:
+    build:
+      context: ./
+      dockerfile: api/people_api/Dockerfile
+    container_name: people_api
+    depends_on:
+      - db
+      - alembic
+    ports:
+      - "8002:8002"
+    volumes:
+      - ./:/app/
+    command: >
+      sh -c "
+      uvicorn api.people_api.main:app --host 0.0.0.0 --port 8002 --reload
+      "
 
-  # frontend:
-  #   build:
-  #     context: ./frontend
-  #     dockerfile: Dockerfile
-  #   container_name: react_frontend
-  #   ports:
-  #     - "3000:3000"
-  #   environment:
-  #     - CHOKIDAR_USEPOLLING=true
-  #     - NODE_ENV=development
-  #   volumes:
-  #     - ./frontend:/app
-  #     - /app/node_modules
-  #   stdin_open: true
-  #   tty: true
-  #   command: >
-  #     sh -c "
-  #     npm install && npm start
-  #     "
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: react_frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+      - NODE_ENV=development
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    stdin_open: true
+    tty: true
+    command: >
+      sh -c "
+      npm install && npm start
+      "
 
 volumes:
   sqlserver_data:
 
 networks:
-  mynetwork:
+  default:
+    name: ttsaw_network

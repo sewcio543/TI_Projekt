@@ -25,7 +25,6 @@ COPY scripts /app/scripts
 COPY ./alembic.ini  /app/
 COPY ./requirements.txt /app/
 
-RUN bash scripts/install_odbc.sh
 
 RUN python -m pip install -r requirements.txt
 

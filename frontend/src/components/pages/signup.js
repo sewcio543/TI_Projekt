@@ -53,7 +53,6 @@ const Signup = () => {
 
             // Save the token, user_id to a session cookie
             document.cookie = `bearer=${access_token}; path=/;`;
-            // document.cookie = `user_id=${user_id}; path=/;`;
             document.cookie = `user_id=${my_user.id}; path=/;`;
             dispatch(signUp());
 
@@ -64,8 +63,8 @@ const Signup = () => {
             navigate("/feed");
 
         } catch (error) {
-            console.error("Error logging in:", error);
-            alert(`Signup failed. ${error.response}`);
+            console.error("Error sign up:", error);
+            alert(`Signup failed. ${error.response.data.detail}`);
         }
     };
 
