@@ -3,7 +3,7 @@ version: "3.9"
 services:
   db:
     image: postgres:15
-    container_name: sqlserver
+    container_name: grudge_db
     ports:
       - "5454:5432"
     environment:
@@ -11,7 +11,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_DB: ttsaw
     volumes:
-      - sqlserver_data:/var/lib/postgresql/data
+      - database_data:/var/lib/postgresql/data
     
 
   alembic:
@@ -97,7 +97,7 @@ services:
       "
 
 volumes:
-  sqlserver_data:
+  database_data:
 
 networks:
   default:
