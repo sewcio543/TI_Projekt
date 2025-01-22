@@ -10,5 +10,16 @@ class IHashingContext(Protocol):
 
 
 def check_password(password: str) -> bool:
-    #! TODO
-    return len(password) >= 2
+    if len(password) < 5:
+        return False
+
+    if not any(char.isdigit() for char in password):
+        return False
+
+    if not any(char.isupper() for char in password):
+        return False
+
+    if not any(char.islower() for char in password):
+        return False
+
+    return True

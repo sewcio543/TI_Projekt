@@ -21,11 +21,11 @@ COPY api /app/api
 COPY domain /app/domain
 COPY migrations  /app/migrations
 COPY connections /app/connections
+COPY scripts /app/scripts
 COPY ./alembic.ini  /app/
 COPY ./requirements.txt /app/
 
-RUN pip install -r requirements.txt
 
-
+RUN python -m pip install -r requirements.txt
 
 CMD ["alembic", "upgrade", "heads"]

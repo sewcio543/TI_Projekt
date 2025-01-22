@@ -1,20 +1,18 @@
 version: "3.9"
 
 services:
-
   db:
-    image: mysql:latest
+    image: postgres:15
     container_name: grudge_db
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: root    # Root password
-      MYSQL_DATABASE: ${PG_DB}              # Name of the default database
-      MYSQL_USER: ${PG_USER}                # User to create
-      MYSQL_PASSWORD: ${PG_PASSWORD}        # Password for the user
     ports:
-      - "3333:3306"
+      - "5454:5432"
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: ttsaw
     volumes:
-      - postgres_data:/var/lib/mysql
+      - database_data:/var/lib/postgresql/data
+    
 
   alembic:
     build:
@@ -23,9 +21,6 @@ services:
     container_name: alembic
     depends_on:
       - db
-    environment:
-      - DSN=${DSN}
-      - DATABASE=MYSQL
     command: >
       sh -c "
       alembic upgrade head && echo 'Migrations applied successfully.'
@@ -40,9 +35,6 @@ services:
     depends_on:
       - db
       - alembic
-    environment:
-      - DSN=${DSN}
-      - DATABASE=MYSQL
     ports:
       - "8001:8001"
     volumes:
@@ -59,9 +51,6 @@ services:
     depends_on:
       - db
       - alembic
-    environment:
-      - DSN=${DSN}
-      - DATABASE=MYSQL
     ports:
       - "8000:8000"
     volumes:
@@ -78,9 +67,6 @@ services:
     depends_on:
       - db
       - alembic
-    environment:
-      - DSN=${DSN}
-      - DATABASE=MYSQL
     ports:
       - "8002:8002"
     volumes:
@@ -111,7 +97,7 @@ services:
       "
 
 volumes:
-  postgres_data:
+  database_data:
 
 networks:
   default:

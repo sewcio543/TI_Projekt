@@ -1,5 +1,6 @@
 import logging
 
+from environs import Env
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 from typing_extensions import Self
 
@@ -7,8 +8,10 @@ from connections.idatabase_connection import ConnectionConfig, IDatabaseConnecti
 
 log = logging.getLogger()
 
+DEFAULT_DRIVER = "ODBC+Driver+17+for+SQL+Server"
 
-class PostgresConnection(IDatabaseConnection):
+
+class MSSQLConnection(IDatabaseConnection):
     def get_engine(self, **kwargs) -> AsyncEngine:
         pool_max = kwargs.get("pool_max", 5)
         pool_overflow = kwargs.get("pool_overflow", 10)
@@ -22,7 +25,7 @@ class PostgresConnection(IDatabaseConnection):
         )
         dsn_log = self._obfuscate_password()
         log.info(
-            f"Created postgres engine (max: {pool_max}/overflow: {pool_overflow}) "
+            f"Created mssql engine (max: {pool_max}/overflow: {pool_overflow}) "
             f"and connected to {dsn_log}. "
         )
         return engine
@@ -36,6 +39,8 @@ class PostgresConnection(IDatabaseConnection):
         port=None,
         database=None,
     ) -> Self:
+        env = Env()
+        env.read_env()
         config = ConnectionConfig.from_env()
 
         if config.dsn is not None:
@@ -47,5 +52,6 @@ class PostgresConnection(IDatabaseConnection):
         port = port or config.port
         database = database or config.database
 
-        dsn = f"postgresql+asyncpg://{user}:{password}@{host}:{port}/{database}"
+        driver = env.str("DRIVER", default=DEFAULT_DRIVER)
+        dsn = f"mssql+aioodbc://{user}:{password}@{host}:{port}/{database}?TrustServerCertificate=yes&driver={driver}&timeout=30"
         return cls(dsn)

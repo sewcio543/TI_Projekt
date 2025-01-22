@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException, status
+from fastapi.responses import RedirectResponse
 
 from api import settings
 from api.dependencies import dep
@@ -51,9 +52,7 @@ async def create(dto: CreateUserDto):
     try:
         user_id = await service.create(dto)
     except ValueError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e))
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     return {"id": user_id}
 
 

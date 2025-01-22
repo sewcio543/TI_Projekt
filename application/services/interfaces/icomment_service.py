@@ -10,6 +10,10 @@ class ICommentService(ABC):
         raise NotImplementedError
 
     @abstractmethod
+    async def get_by_post_id(self, post_id: int) -> Iterable[CommentDto]:
+        raise NotImplementedError
+
+    @abstractmethod
     async def get_all(self) -> Iterable[CommentDto]:
         raise NotImplementedError
 

@@ -23,7 +23,7 @@ async def verify_user(
         try:
             response = await client.get(
                 #! TODO: idk why, but localhost does not work for /verify
-                #! it works for /token though wtf
+                #! it works for /token though
                 "http://identity_api:8000/verify",
                 headers=headers,
             )

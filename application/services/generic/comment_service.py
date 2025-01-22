@@ -25,16 +25,16 @@ class CommentService(ICommentService):
             raise ValueError("Entity not found")
 
         return self.mapper.to_dto(entity)
-    
+
     async def get_by_post_id(self, post_id: int) -> Iterable[CommentDto]:
         if post_id < 0:
             raise ValueError("Invalid id")
-        
+
         entities = await self.repository.get_by_post_id(post_id)
-        
+
         if entities is None:
             raise ValueError("Entity not found")
-        
+
         return map(self.mapper.to_dto, entities)
 
     async def get_all(self) -> Iterable[CommentDto]:

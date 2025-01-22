@@ -50,14 +50,15 @@ class UserService(IUserService):
             raise ValueError("Invalid entity")
 
         exists = await self.repository.exists(dto.login)
+        print(exists)
 
         #! TODO: sth stinks here lol
-        if exists is None:
+        if exists:
             raise ValueError(f"User with login {dto.login} already exists")
 
         #! TODO
         if not check_password(dto.password):
-            raise ValueError("Password is invalid")
+            raise ValueError("Password is invalid. Has to be at least 5 characters long, contain at least one digit, lower and upper case letter")
 
         dto.password = self.hasher.hash(dto.password)
         entity = self.mapper.to_entity(dto)
