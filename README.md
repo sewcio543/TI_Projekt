@@ -1,9 +1,10 @@
 # GrudgeHub
 
-GrudgeHub is a place where you can let it all out!
-This social media does not accept positive content, only grudges and complaints.
+`GrudgeHub` is a place where you can let it all out!
 
-If you are too polite, app will turn itself into a [teapot](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/418).
+Positive content is strictly forbidden, only grudges and complaints are allowed.
+
+If you are too polite, the app will turn itself into a [teapot](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/418) taking your coffee with it.
 
 ## Getting started
 
