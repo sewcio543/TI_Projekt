@@ -25,8 +25,8 @@ class CommentRepository(Repository[Comment], ICommentRepository):
         result = await self.session.execute(stmt)
         post = result.scalars().one()
         return post
-    
-    async def get_by_post_id(self, post_id: int) -> Comment:
+
+    async def get_by_post_id(self, post_id: int) -> Iterable[Comment]:
         stmt = (
             select(Comment)
             .options(joinedload(Comment.user))  # type: ignore

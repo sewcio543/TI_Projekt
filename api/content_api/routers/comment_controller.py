@@ -15,6 +15,7 @@ async def get(comment_id: int) -> CommentDto:
     entity = await service.get_by_id(comment_id)
     return entity
 
+
 @router.get("/post/{post_id}", response_model=list[CommentDto])
 async def get_by_post_id(post_id: int) -> list[CommentDto]:
     comments = await service.get_by_post_id(post_id)
